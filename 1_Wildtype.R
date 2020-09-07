@@ -77,7 +77,7 @@ for (i in 1 : nrow(Null_Metabolomics_e)){
   
   
      lm_result <- summary(lm(Null_Metabol$trans ~ Null_Metabol$Gender, na.action = 'na.exclude'))
-     p_val1[i] <- summary(lm(Null_Metabol$Blom ~ Null_Metabol$Gender, na.action = 'na.exclude'))$coefficients[2, 4]
+     p_val1[i] <- summary(lm(Null_Metabol$trans ~ Null_Metabol$Gender, na.action = 'na.exclude'))$coefficients[2, 4]
      Coef1[i] <- summary(lm(Null_Metabol$trans ~ Null_Metabol$Gender, na.action = 'na.exclude'))$coefficients[2, 1]
      fc1[i] <-  mean(Null_Metabol$Intensity[Null_Metabol$Gender %in% "Male"])/ mean(Null_Metabol$Intensity[Null_Metabol$Gender %in% "Female"])
      
@@ -321,8 +321,8 @@ for (i in 1:nrow(Phenotype_UCDavis_e_null)){
     M_Count[i] <- sum(Phenotype_UCDavis_e_Null_Stats$Gender %in% "Male")
     
     
-    p_val4[i] <- summary(lm(Phenotype_UCDavis_e_Null ~ Phenotype_UCDavis_p_Null$Gender + body_weight_stats, na.action = 'na.exclude'))$coefficients[2, 4]
-    Coef4[i] <- summary(lm(Phenotype_UCDavis_e_Null ~ Phenotype_UCDavis_p_Null$Gender + body_weight_stats, na.action = 'na.exclude'))$coefficients[2, 1]
+    p_val4[i] <- summary(lm(Phenotype_UCDavis_e_Null_Stats ~ Phenotype_UCDavis_p_Null_Stats$Gender + body_weight_stats, na.action = 'na.exclude'))$coefficients[2, 4]
+    Coef4[i] <- summary(lm(Phenotype_UCDavis_e_Null_Stats ~ Phenotype_UCDavis_p_Null_Stats$Gender + body_weight_stats, na.action = 'na.exclude'))$coefficients[2, 1]
     
     fc4[i] <- mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Male"])/ mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Female"])
     
