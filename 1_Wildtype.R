@@ -140,7 +140,7 @@ fwrite(data.table(label = Null_Metabolomics_f$label, Metbaolites = Null_Metabolo
 
 
 #######################################################################################################
-#2: SD in metabolomics data (Wildtype mice)
+#2: SD in phenotype data (Wildtype mice)
 #load raw data file from metabolomics assays
 
 ## 2a: wildtype mice phenotype - sex
