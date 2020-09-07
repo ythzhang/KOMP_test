@@ -519,15 +519,14 @@ for (i in 1 : length(files_metmerge)){
   
   met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05) & (met1$sep_FvKO_pval < 0.05 & met1$sep_MvKO_pval < 0.05) & ((met1$sep_FvKO_estimate > 0 & met1$sep_MvKO_estimate > 0)  | (met1$sep_FvKO_estimate < 0 & met1$sep_MvKO_estimate < 0))] = "Different size2"
   
-  met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05) & (met1$sep_FvKO_pval < 0.05&met1$sep_MvKO_pval >= 0.05)] = "One sex_Female only2"
-  met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05) & (met1$sep_FvKO_pval >= 0.05&met1$sep_MvKO_pval < 0.05)] = "One sex_Male only2"
+  met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05) & (met1$sep_FvKO_pval < 0.05 & met1$sep_MvKO_pval >= 0.05)] = "One sex_Female only2"
+  met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05) & (met1$sep_FvKO_pval >= 0.05 & met1$sep_MvKO_pval < 0.05)] = "One sex_Male only2"
   
   
   met1$est_dirct[(met1$pvalue_Stage1 < 0.05 & met1$pvalue_stage2 < 0.05) & (met1$sep_FvKO_pval >= 0.05 & met1$sep_MvKO_pval >= 0.05 )] = "cannot classify"
   
   met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05) & (met1$sep_FvKO_pval >= 0.05 & met1$sep_MvKO_pval >= 0.05 )] = "cannot classify"
   
-  # met1$est_dirct[(met1$pvalue_Stage1<=0.05&met1$pvalue_stage2<=0.05)&(met1$sep_FvKO_pval>0.05&met1$sep_MvKO_pval>0.05 & met1$sep_allKO_pval <= 0.05 )] = "Genotype effect with no sex effect(real)"
   
   met1$est_dirct[(met1$pvalue_Stage1 < 0.05 & met1$pvalue_stage2 >= 0.05)] = "Genotype effect with no sex effect(real)"                 
   
