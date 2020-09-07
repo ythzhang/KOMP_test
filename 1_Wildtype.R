@@ -11,30 +11,30 @@ library(RNOmni)
 setwd("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 Null_Metabolomics = wcmc::read_data("Supplementary Data 1.xlsx")
 
-Null_Metabolomics_p = Null_Metabolomics$p
-Null_Metabolomics_f = Null_Metabolomics$f
-Null_Metabolomics_e = Null_Metabolomics$e_matrix
+Null_Metabolomics_p <- Null_Metabolomics$p
+Null_Metabolomics_f <- Null_Metabolomics$f
+Null_Metabolomics_e <- Null_Metabolomics$e_matrix
 
 
 ## 1a: wildtype mice - sex
 ### deal with missing values: filter missing value > 70%, replace other missing values.
 
-num_missing_male = apply(Null_Metabolomics_e,1,function(x){
+num_missing_male <- apply(Null_Metabolomics_e,1,function(x){
   sum(is.na(x[Null_Metabolomics_p$Gender %in% "Male"]))
 })
-num_missing_female = apply(Null_Metabolomics_e,1,function(x){
+num_missing_female <- apply(Null_Metabolomics_e,1,function(x){
   sum(is.na(x[Null_Metabolomics_p$Gender %in% "Female"]))
 })
-names(num_missing_male) = names(num_missing_female) = Null_Metabolomics_f$label
+names(num_missing_male) <- names(num_missing_female) = Null_Metabolomics_f$label
 missing_index = ((num_missing_male/sum(Null_Metabolomics_p$Gender %in% "Male")) >= 0.7)&((num_missing_female/sum(Null_Metabolomics_p$Gender %in% "Female")) >= 0.7)
-Null_Metabolomics_e = Null_Metabolomics_e[!missing_index,]
-Null_Metabolomics_f = Null_Metabolomics_f[!missing_index,]
+Null_Metabolomics_e <- Null_Metabolomics_e[!missing_index,]
+Null_Metabolomics_f <- Null_Metabolomics_f[!missing_index,]
 
 for(i in 1:nrow(Null_Metabolomics_e)){
   Null_Metabolomics_e[i,is.na(Null_Metabolomics_e[i,])] = 0.5 * min(Null_Metabolomics_e[i,], na.rm = TRUE)
 }
 
-rownames(Null_Metabolomics_e) = Null_Metabolomics_f$label
+rownames(Null_Metabolomics_e) <- Null_Metabolomics_f$label
 
 ## statistics
 ########################################################################
@@ -73,15 +73,15 @@ for (i in 1:nrow(Null_Metabolomics_e)){
   Null_e_F <- Null_Metabol[Null_Metabol$Gender %in% "Female",]
   
   
-  lm_result<- summary(lm(Null_Metabol$trans ~ Null_Metabol$Gender, na.action = 'na.exclude'))
-  p_val1[i] = summary(lm(Null_Metabol$Blom ~ Null_Metabol$Gender, na.action = 'na.exclude'))$coefficients[2,4]
-  Coef1[i] = summary(lm(Null_Metabol$trans~ Null_Metabol$Gender, na.action = 'na.exclude'))$coefficients[2,1]
-  fc1 [i] =  mean(Null_Metabol$Intensity[Null_Metabol$Gender %in% "Male"])/mean(Null_Metabol$Intensity[Null_Metabol$Gender %in% "Female"])
+  lm_result <- summary(lm(Null_Metabol$trans ~ Null_Metabol$Gender, na.action = 'na.exclude'))
+  p_val1[i] <- summary(lm(Null_Metabol$Blom ~ Null_Metabol$Gender, na.action = 'na.exclude'))$coefficients[2,4]
+  Coef1[i] <- summary(lm(Null_Metabol$trans~ Null_Metabol$Gender, na.action = 'na.exclude'))$coefficients[2,1]
+  fc1 [i] <-  mean(Null_Metabol$Intensity[Null_Metabol$Gender %in% "Male"])/mean(Null_Metabol$Intensity[Null_Metabol$Gender %in% "Female"])
   
 
 }
 
-p_val_adj1 = p.adjust(p_val1, method = "fdr")
+p_val_adj1 <- p.adjust(p_val1, method = "fdr")
 
 fwrite(data.table(label = Null_Metabolomics_f$label, Metbaolites = Null_Metabolomics_f$CompoundName,Platform= Null_Metabolomics_f$Assay, F_Count=F_Count, M_Count =M_Count, Normality_before = test1_Norma, Normality_M = Normality_M, Normality_F = Normality_F, p_value = p_val1, Coefficient=Coef1, fold_change = fc1, adjusted_p_value = p_val_adj1),"xxxxxxxxxxxxxxxxxxxxxxxxx")
 
@@ -95,36 +95,36 @@ Phenotype_bw_p = Phenotype_bw$p
 Phenotype_bw_f = Phenotype_bw$f
 Phenotype_bw_e = Phenotype_bw$e_matrix
 
-body_weight_all = Phenotype_bw_e[,Phenotype_bw_p[["phenotype"]] %in% "Body weight"]
-names(body_weight_all) = Phenotype_bw_f$label
-body_weight = body_weight_all[Null_Metabolomics_p$label]
-names(body_weight)<-Null_Metabolomics_p$label
+body_weight_all <- Phenotype_bw_e[,Phenotype_bw_p[["phenotype"]] %in% "Body weight"]
+names(body_weight_all) <- Phenotype_bw_f$label
+body_weight <- body_weight_all[Null_Metabolomics_p$label]
+names(body_weight) <- Null_Metabolomics_p$label
 
 ## statistics
  p_val2 = fc2 = p_val_adj2 = F_Count = M_Count = Coef2 =  c()
 
-for (i in 1:nrow(Null_Metabolomics_e)){
+ for (i in 1 : nrow(Null_Metabolomics_e)){
 
-  Null_Metabolomics_e_trans<- rankNorm(Null_Metabolomics_e[i,])
+      Null_Metabolomics_e_trans <- rankNorm(Null_Metabolomics_e[i,])
 
-  Null_Metabolomics_e_Stats<-data.table(Null_Metabolomics_p$Gender, Null_Metabolomics_e[i,], Null_Metabolomics_e_trans, body_weight)
-  # Null_Metabolomics_f$CompoundName[i]  
-  # Null_Metabolomics_f$label[i]  
+      Null_Metabolomics_e_Stats <- data.table(Null_Metabolomics_p$Gender, Null_Metabolomics_e[i,], Null_Metabolomics_e_trans, body_weight)
+      # Null_Metabolomics_f$CompoundName[i]  
+      # Null_Metabolomics_f$label[i]  
 
 
-  colnames(Null_Metabolomics_e_Stats) <- c("Gender","MetaboVAlue_raw","MetaboVAlue_trans","Weight")
+      colnames(Null_Metabolomics_e_Stats) <- c("Gender","MetaboVAlue_raw","MetaboVAlue_trans","Weight")
   
-  Null_Metabolomics_e_Stats <- Null_Metabolomics_e_Stats[!is.na(Null_Metabolomics_e_Stats$Weight),]
-  Null_Metabolomics_e_Stats$weight_trans <- rankNorm(Null_Metabolomics_e_Stats$Weight)
+      Null_Metabolomics_e_Stats <- Null_Metabolomics_e_Stats[!is.na(Null_Metabolomics_e_Stats$Weight),]
+      Null_Metabolomics_e_Stats$weight_trans <- rankNorm(Null_Metabolomics_e_Stats$Weight)
   
-  F_Count[i] <- sum((Null_Metabolomics_e_Stats$Gender %in% "Female"))      
-  M_Count[i] <- sum(Null_Metabolomics_e_Stats$Gender %in% "Male")
-  # body_weight_stats<-body_weight[names(body_weight)%in%Null_Metabolomics_p_New$label]
+      F_Count[i] <- sum((Null_Metabolomics_e_Stats$Gender %in% "Female"))      
+      M_Count[i] <- sum(Null_Metabolomics_e_Stats$Gender %in% "Male")
+      # body_weight_stats<-body_weight[names(body_weight)%in%Null_Metabolomics_p_New$label]
 
-  p_val2[i] = summary(lm(Null_Metabolomics_e_Stats$MetaboVAlue_trans ~ Null_Metabolomics_e_Stats$Gender + Null_Metabolomics_e_Stats$weight_trans,na.action = 'na.exclude'))$coefficients[2,4]
-  Coef2[i] = summary(lm(Null_Metabolomics_e_Stats$MetaboVAlue_trans ~ Null_Metabolomics_e_Stats$Gender + Null_Metabolomics_e_Stats$weight_trans,na.action = 'na.exclude'))$coefficients[2,1]
+      p_val2[i] <- summary(lm(Null_Metabolomics_e_Stats$MetaboVAlue_trans ~ Null_Metabolomics_e_Stats$Gender + Null_Metabolomics_e_Stats$weight_trans,na.action = 'na.exclude'))$coefficients[2,4]
+      Coef2[i] <- summary(lm(Null_Metabolomics_e_Stats$MetaboVAlue_trans ~ Null_Metabolomics_e_Stats$Gender + Null_Metabolomics_e_Stats$weight_trans,na.action = 'na.exclude'))$coefficients[2,1]
   
-  fc2 [i] =  mean(Null_Metabolomics_e_Stats$MetaboVAlue_raw[Null_Metabolomics_e_Stats$Gender %in% "Male"])/mean(Null_Metabolomics_e_Stats$MetaboVAlue_raw[Null_Metabolomics_e_Stats$Gender %in% "Female"])
+      fc2 [i] <-  mean(Null_Metabolomics_e_Stats$MetaboVAlue_raw[Null_Metabolomics_e_Stats$Gender %in% "Male"])/mean(Null_Metabolomics_e_Stats$MetaboVAlue_raw[Null_Metabolomics_e_Stats$Gender %in% "Female"])
 
   
   
@@ -132,7 +132,7 @@ for (i in 1:nrow(Null_Metabolomics_e)){
     
 }
 
-p_val_adj2 = p.adjust(p_val2,method ="fdr")
+p_val_adj2 <- p.adjust(p_val2,method ="fdr")
 
 fwrite(data.table(label = Null_Metabolomics_f$label, Metbaolites = Null_Metabolomics_f$CompoundName,Platform = Null_Metabolomics_f$Assay, F_Count = F_Count, M_Count = M_Count, p_value = p_val2, Coefficient=Coef2, fold_change = fc2, adjusted_p_value = p_val_adj2),"XXXXXXXXXXXXXXXXXXXXXXXXXX")
 
@@ -214,7 +214,7 @@ Raw_Phenotype_UCDavis_e_merge[Raw_Phenotype_UCDavis_e_merge == "NA"] = NA
 
 Raw_Phenotype_UCDavis_e_null = Raw_Phenotype_UCDavis_e_merge[,Raw_Phenotype_UCDavis_p$Genotype %in% "null"]
 Raw_Phenotype_UCDavis_p_null = Raw_Phenotype_UCDavis_p[Raw_Phenotype_UCDavis_p$Genotype %in% "null", ]
-Raw_Phenotype_UCDavis_e_null<-as.matrix(Raw_Phenotype_UCDavis_e_null)
+Raw_Phenotype_UCDavis_e_null <- as.matrix(Raw_Phenotype_UCDavis_e_null)
 
 Raw_Phenotype_UCDavis_e_null = apply(Raw_Phenotype_UCDavis_e_null, 2, as.numeric)
 rownames(Raw_Phenotype_UCDavis_e_null) = rownames(Raw_Phenotype_UCDavis_e_merge)
@@ -241,7 +241,7 @@ for (i in 1:nrow(Phenotype_UCDavis_e_null)){
     continuous = sum(is.na(as.numeric(Phenotype_UCDavis_e_null[i,!is.na(Phenotype_UCDavis_e_null[i,])]))) == 0
     
     if(continuous){
-      continuous_index[i] = TRUE
+      continuous_index[i] <- TRUE
   
      Phenotype_UCDavis_e_Null_Stats <- data.table(Phenotype_UCDavis_e_Null,Phenotype_UCDavis_p_Null$Gender)
      colnames(Phenotype_UCDavis_e_Null_Stats) <- c("PhenoVAlue","Gender")
@@ -250,20 +250,20 @@ for (i in 1:nrow(Phenotype_UCDavis_e_null)){
       M_Count[i] <- sum(Phenotype_UCDavis_e_Null_Stats$Gender %in% "Male")
   
   
-      p_val3[i] = summary(lm(Phenotype_UCDavis_e_Null_New ~ Phenotype_UCDavis_p_Null_New$Gender, na.action = 'na.exclude'))$coefficients[2,4]
-      Coef3[i] = summary(lm(Phenotype_UCDavis_e_Null_New ~ Phenotype_UCDavis_p_Null_New$Gender, na.action = 'na.exclude'))$coefficients[2,1]
+      p_val3[i] <- summary(lm(Phenotype_UCDavis_e_Null_New ~ Phenotype_UCDavis_p_Null_New$Gender, na.action = 'na.exclude'))$coefficients[2,4]
+      Coef3[i] <- summary(lm(Phenotype_UCDavis_e_Null_New ~ Phenotype_UCDavis_p_Null_New$Gender, na.action = 'na.exclude'))$coefficients[2,1]
   
-      fc3[i] =  mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Male"])/ mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Female"])
+      fc3[i] <- mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Male"])/ mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Female"])
   
 }else{
   
-      continuous_index[i] = FALSE
-      F_Count[i] = NA
-      M_Count[i] = NA
+      continuous_index[i] <- FALSE
+      F_Count[i] <- NA
+      M_Count[i] <- NA
   
-      p_val3[i] = NA
-      Coef3[i] = NA
-      fc3[i] = NA
+      p_val3[i] <- NA
+      Coef3[i] <- NA
+      fc3[i] <- NA
       
 }
     
@@ -271,7 +271,7 @@ for (i in 1:nrow(Phenotype_UCDavis_e_null)){
 
 
 
-p_val_adj3 = p.adjust(p_val3,method ="fdr")
+p_val_adj3 <- p.adjust(p_val3,method ="fdr")
 
 
 fwrite(data.table(label = rownames(Phenotype_UCDavis_e_null),F_Count = F_Count, M_Count = M_Count, p_value = p_val3, coefficient = Coef3, fold_change = fc3, adjusted_p_value = p.adjust(p_val3,'fdr')),"XXXXXXXXXXXXXXXXXXXXXXXXXX.csv")
@@ -300,7 +300,7 @@ for (i in 1:nrow(Phenotype_UCDavis_e_null)){
   
   
   if(continuous){
-    continuous_index[i] = TRUE
+    continuous_index[i] <- TRUE
     
     
     body_weight_stats <- body_weight[names(body_weight) %in% Phenotype_UCDavis_p_Null$label]
@@ -313,28 +313,28 @@ for (i in 1:nrow(Phenotype_UCDavis_e_null)){
     M_Count[i] <- sum(Phenotype_UCDavis_e_Null_Stats$Gender %in% "Male")
     
     
-    p_val4[i] = summary(lm(Phenotype_UCDavis_e_Null ~ Phenotype_UCDavis_p_Null$Gender + body_weight_stats, na.action = 'na.exclude'))$coefficients[2,4]
-    Coef4[i] = summary(lm(Phenotype_UCDavis_e_Null ~ Phenotype_UCDavis_p_Null$Gender + body_weight_stats, na.action = 'na.exclude'))$coefficients[2,1]
+    p_val4[i] <- summary(lm(Phenotype_UCDavis_e_Null ~ Phenotype_UCDavis_p_Null$Gender + body_weight_stats, na.action = 'na.exclude'))$coefficients[2,4]
+    Coef4[i] <- summary(lm(Phenotype_UCDavis_e_Null ~ Phenotype_UCDavis_p_Null$Gender + body_weight_stats, na.action = 'na.exclude'))$coefficients[2,1]
     
-    fc4[i] = mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Male"])/mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Female"])
+    fc4[i] <- mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Male"])/mean(Phenotype_UCDavis_e_Null_Stats$PhenoVAlue[Phenotype_UCDavis_e_Null_Stats$Gender %in% "Female"])
     
     
     
   }else{
-    continuous_index[i] = FALSE
+    continuous_index[i] <- FALSE
     
     
     F_Count[i] <- NA     
     M_Count[i] <- NA
-    p_val4[i] = NA
-    Coef4[i] = NA
-    fc4[i] = NA
+    p_val4[i] <- NA
+    Coef4[i] <- NA
+    fc4[i] <- NA
   }
   
 }
 
 
-p_val_adj4 = p.adjust(p_val4, method = "fdr")
+p_val_adj4 <- p.adjust(p_val4, method = "fdr")
 # sum(p_val4[continuous_index] < 0.05,na.rm = TRUE)/sum(continuous_index)
 
 
