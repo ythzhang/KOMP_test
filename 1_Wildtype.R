@@ -9,7 +9,7 @@ library(data.table)
 library(RNOmni)
 
 setwd("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-Null_Metabolomics = wcmc::read_data("Supplementary Data 1.xlsx")
+Null_Metabolomics <- wcmc::read_data("Supplementary Data 1.xlsx")
 
 Null_Metabolomics_p <- Null_Metabolomics$p
 Null_Metabolomics_f <- Null_Metabolomics$f
