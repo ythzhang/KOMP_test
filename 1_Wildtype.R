@@ -40,7 +40,7 @@ rownames(Null_Metabolomics_e) <- Null_Metabolomics_f$label
 ## statistics
 ########################################################################
 
-test1_Norma = Normality_F = Normality_M = p_val1 = fc1 = p_val_adj1 = F_Count = M_Count = Coef1 <- c()
+test1_Norma = Normality_F = Normality_M = p_val1 = fc1 = p_val_adj1 = F_Count = M_Count = Coef1 = c()
 
 for (i in 1 : nrow(Null_Metabolomics_e)){
 
@@ -235,7 +235,7 @@ Phenotype_UCDavis_e_null <- Raw_Phenotype_UCDavis_e_null[!missing_index, ]
 rownames(Phenotype_UCDavis_e_null) <- rownames(Raw_Phenotype_UCDavis_e_merge)[!missing_index]
 
 
-p_val3 = fc3 = p_val_adj3 = Coef3 = F_Count = M_Count = continuous_index <- c()
+p_val3 = fc3 = p_val_adj3 = Coef3 = F_Count = M_Count = continuous_index = c()
 
 for (i in 1 : nrow(Phenotype_UCDavis_e_null)){
     
