@@ -93,10 +93,10 @@ fwrite(data.table(label = Null_Metabolomics_f$label, Metbaolites = Null_Metabolo
 ##1b: wildtype mice - sex adjust by body weight
 #load bodyweight data from phenotype results 
 
-Phenotype_bw = wcmc::read_data("xxxxxxxxxxxxxxxxxxxxxxxxx.xlsx")
-Phenotype_bw_p = Phenotype_bw$p
-Phenotype_bw_f = Phenotype_bw$f
-Phenotype_bw_e = Phenotype_bw$e_matrix
+Phenotype_bw <- wcmc::read_data("xxxxxxxxxxxxxxxxxxxxxxxxx.xlsx")
+Phenotype_bw_p <- Phenotype_bw$p
+Phenotype_bw_f <- Phenotype_bw$f
+Phenotype_bw_e <- Phenotype_bw$e_matrix
 
 body_weight_all <- Phenotype_bw_e[,Phenotype_bw_p[["phenotype"]] %in% "Body weight"]
 names(body_weight_all) <- Phenotype_bw_f$label
@@ -202,10 +202,10 @@ for(u in 1 : length(unique_phenotype)){
         Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u],][the_j_th_col == "NA", j] = Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u],][!the_j_th_col == "NA", j] 
       } 
     }
-    Raw_Phenotype_UCDavis_e_merge[i, ] = unique(Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u], ])
-    i <- i + 1
+    Raw_Phenotype_UCDavis_e_merge[i, ] <- unique(Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u], ])
+    i <- i + -
   }else{
-    Raw_Phenotype_UCDavis_e_merge[i, ] = Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u], ]
+    Raw_Phenotype_UCDavis_e_merge[i, ] <- Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u], ]
     i <- i + 1
   }
 }
@@ -230,7 +230,7 @@ num_missing_female <- apply(Raw_Phenotype_UCDavis_e_null, 1, function(x){
 })
 
 
-missing_index <- ((num_missing_male/sum(Raw_Phenotype_UCDavis_p_null$Gender %in% "Male")) >= 0.7)&((num_missing_female/sum(Raw_Phenotype_UCDavis_p_null$Gender %in% "Female")) >= 0.7)
+missing_index <- ((num_missing_male/sum(Raw_Phenotype_UCDavis_p_null$Gender %in% "Male")) >= 0.7) & ((num_missing_female/sum(Raw_Phenotype_UCDavis_p_null$Gender %in% "Female")) >= 0.7)
 Phenotype_UCDavis_e_null <- Raw_Phenotype_UCDavis_e_null[!missing_index, ]
 rownames(Phenotype_UCDavis_e_null) <- rownames(Raw_Phenotype_UCDavis_e_merge)[!missing_index]
 
