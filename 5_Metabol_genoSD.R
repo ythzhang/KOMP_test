@@ -208,8 +208,8 @@ for(g in 1:length(unique_genes)){
           current_e_F[i, ] = current_e_F[i, ]
           current_e_M[i, is.na(current_e_M[i, ])] = runif(sum(is.na(current_e_M[i, ])),min = 0.98, max = 1.02) * min(current_e[i, !is.na(current_e[i, ])])
         }else if(sum(is.na(current_e_F[i, ])) == 1 & sum(is.na(current_e_M[i, ])) == 1){
-          current_e_F[i, is.na(current_e_F[i, ])] = runif(sum(is.na(current_e_F[i, ])), min=0.98, max = 1.02) * min(current_e[i, !is.na(current_e[i, ])])
-          current_e_M[i, is.na(current_e_M[i, ])] = runif(sum(is.na(current_e_M[i, ])), min=0.98, max = 1.02) * min(current_e[i, !is.na(current_e[i, ])])
+          current_e_F[i, is.na(current_e_F[i, ])] = runif(sum(is.na(current_e_F[i, ])), min = 0.98, max = 1.02) * min(current_e[i, !is.na(current_e[i, ])])
+          current_e_M[i, is.na(current_e_M[i, ])] = runif(sum(is.na(current_e_M[i, ])), min = 0.98, max = 1.02) * min(current_e[i, !is.na(current_e[i, ])])
         }
       }else if(sum(is.na(current_e[i, ])) <= 1){
         current_e_F[i, is.na(current_e_F[i, ])] = runif(sum(is.na(current_e_F[i, ])), min = 0.98, max = 1.02) * min(current_e[i, !is.na(current_e[i, ])])
