@@ -163,10 +163,10 @@ Raw_Phenotype_UCDavis_f$label_phenotype <- sapply(strsplit(Raw_Phenotype_UCDavis
 # length(Raw_Phenotype_UCDavis_f$label_phenotype)
 unique_phenotype <- unique(Raw_Phenotype_UCDavis_f$label_phenotype)
 
-for(u in 1:length(unique_phenotype)){
-  if(sum(Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u])>1){
-    if(length(table(Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u],]))>1){
-      duplicated_value_index = which(apply(Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u],1:2], 2, function(x){
+for(u in 1 : length(unique_phenotype)){
+  if(sum(Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u]) > 1){
+    if(length(table(Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u],])) > 1){
+      duplicated_value_index = which(apply(Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u], 1 : 2], 2, function(x){
         if(length(unique(x)) == 1){
           if(!unique(x) == "NA"){
             return(TRUE)
@@ -179,7 +179,7 @@ for(u in 1:length(unique_phenotype)){
       }))
       if(length(duplicated_value_index) > 0){
         print(unique_phenotype[u])
-        print(Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u], 1:10])
+        print(Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u], 1 : 10])
         Sys.sleep(20)
       }
     }
@@ -203,7 +203,7 @@ for(u in 1 : length(unique_phenotype)){
       } 
     }
     Raw_Phenotype_UCDavis_e_merge[i, ] <- unique(Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u], ])
-    i <- i + -
+    i <- i + 1
   }else{
     Raw_Phenotype_UCDavis_e_merge[i, ] <- Raw_Phenotype_UCDavis_e[Raw_Phenotype_UCDavis_f$label_phenotype %in% unique_phenotype[u], ]
     i <- i + 1
