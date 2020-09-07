@@ -343,12 +343,3 @@ fwrite(data.table(label = rownames(Phenotype_UCDavis_e_null), F_Count = F_Count,
 
 
 
-
-
-
-
-
-
-
-
-
