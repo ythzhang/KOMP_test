@@ -339,3 +339,16 @@ p_val_adj4 = p.adjust(p_val4, method = "fdr")
 
 
 fwrite(data.table(label = rownames(Phenotype_UCDavis_e_null), F_Count = F_Count, M_Count = M_Count, p_value = p_val4, Coefficient = Coef4, fold_change = fc4, adjusted_p_value = p.adjust(p_val4,'fdr')), "XXXXXXXXXXXXXXXXXXXXXXXXXX.csv")
+
+
+
+
+
+
+
+
+
+
+
+
+
