@@ -341,18 +341,18 @@ testing_Interaction_effect<-function(dataset, PHenoVAlue){
 #load datafile from large scale assessment of role of sex across IMPC data
 #Starting TwoStage significance calculation
 
-Normality_before = Normality_F = Normality_M = list()
+Normality_before = Normality_F = Normality_M <- list()
 
-numb_null = numb_gene = list()
+numb_null = numb_gene <- list()
 
-pvalue_Stage1 = pvalue_Stage2 = list()
+pvalue_Stage1 = pvalue_Stage2 <- list()
 
-sep_allKO_pval = sep_allKO_estimate =  list()
-sep_FvKO_pval = sep_FvKO_estimate = sep_MvKO_pval = sep_MvKO_estimate = list()
-foldchange_FvKO = foldchange_MvKO = list()
+sep_allKO_pval = sep_allKO_estimate <- list()
+sep_FvKO_pval = sep_FvKO_estimate = sep_MvKO_pval = sep_MvKO_estimate <- list()
+foldchange_FvKO = foldchange_MvKO <- list()
 
-ctrl_sex_pval = ctrl_sex_estimate = list() 
-KO_sex_pval = KO_sex_estimate = list()
+ctrl_sex_pval = ctrl_sex_estimate <- list() 
+KO_sex_pval = KO_sex_estimate <- list()
 
 
 for(g in 2 : length(unique_genes)){
