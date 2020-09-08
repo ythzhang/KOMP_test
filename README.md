@@ -11,18 +11,21 @@ Note:
 2. Within each folder is a README file which will tell you the inputs needed to achieve the goal of that folder and point you to other folders if necessary. 
 
 
-###Summary output files
 
+```
+Summary output files
 1.	Supplementary Data 1.xlsx is the raw metabolomics data file for 220 mice (wildtype & KOs)
 2.  Supplementary Data 2.xlsx is the raw phenotype data file extracted from IMPC database for 220 mice (wildtype & KOs)
 
 This folder has the summary files obtained from the analysis collected together in one place.  Below is a quick summary of how to interpret the data and information on how the file was generated is provided.
 
+```
+
 Focusing on the role of sex in wildtype data-Mtabolomics
 3.	Supplementary Data 3.xlsx
 3a.	Spreadsheet 1:
 
-### •	This file is generated from the R.code: (1_Wildtype)
+•	This file is generated from the R.code: (1_Wildtype)
 •	Column “p_value” gives the p value for the role of sex without adjustment
 •	Column “Coefficient” or "fold_change" gives the comparison with male vs. female mice	
 •	Column “adjusted_p_value” gives the p value for the role after adjusting using Benjamini & Hochberg method. For a 5% FDR look at rows with value <0.05. 
