@@ -23,8 +23,8 @@ Focusing on the role of sex in wildtype data-Mtabolomics
 3.	Supplementary Data 3.xlsx
 3a.	Spreadsheet 1:
 
-•	This file is generated from the R.code: (1_Wildtype)
-•	Column “p_value” gives the p value for the role of sex without adjustment
+•	This file is generated from the R.code: (1_Wildtype) /
+•	Column “p_value” gives the p value for the role of sex without adjustment/
 •	Column “Coefficient” or "fold_change" gives the comparison with male vs. female mice	
 •	Column “adjusted_p_value” gives the p value for the role after adjusting using Benjamini & Hochberg method. For a 5% FDR look at rows with value <0.05. 
 
