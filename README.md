@@ -2,6 +2,12 @@
 
 
 
+
+.	This spreadsheet is at the variable level and is focused on continuous data.
+.	This file is generated as described in README file for Figure 1c and 1d.
+.	Using column "ClassificationAcrossGandSDindependentcontrol5per" you can see the outcome is classified as  "both sexes equally", "SD" or "not significant
+
+
 The content of this folder 
 The materials listed in this folder are provided to give statistical analysis for manuscript "Strong sexual dimorphism of plasma metabolites in 30 KO strains by multi-platform mass spectrometry analysis"
 
