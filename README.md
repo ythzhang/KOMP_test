@@ -51,10 +51,10 @@ Similar to 4a,
 Focusing on the role of sex in the genotype effect - Metabolomics Data
 5.	Supplementary Data 5.xlsx
 5a.	Spreadsheet 1:
-•	This file is generated from the the R.code: (5_Metabol_genoSD) and is for classifying the genotype*sex interaction effect with pvalue_Stage1 < 0.05
+•	This file is generated from the the R.code: (5_Metabol_genoSD) and is for classifying the genotype-sex interaction effect with pvalue_Stage1 < 0.05
 •	 The data is used to create bar plot in figure 3c
 •	Column "pvalue_Stage1" gives the p value for the role of genotype without adjustment
-•	Column "pvalue_Stage2" gives the  p value for the role of genotype*sex interaction without adjustment
+•	Column "pvalue_Stage2" gives the  p value for the role of genotype-sex interaction without adjustment
 •	Column "sep_FvKO_pval" and "sep_MvKO_pval" give the individual p values for comparing KO female vs. WT female or comparing KO male vs. WT male
 •	Column "ctrl_sex_pval" and "KO_sex_pval" give the individual p values for comparing WT male vs. WT female comparing KO male vs. KO female, which is used for plotting boxplot in Figure 4, 5, and 6.
 
@@ -68,11 +68,12 @@ Focusing on the role of sex in the genotype effect - Metabolomics Data
 Focusing on the role of sex in the genotype effect - Phenotype Data
 6.	Supplementary Data 6.xlsx
 6a.	Spreadsheet 1:
-•	This spreadsheet is generated from the the R.code: (5_PHENO_genoSD) and is for classifying the genotype*sex interaction effect with pvalue_Stage1 < 0.05
+•	This spreadsheet is generated from the the R.code: (5_PHENO_genoSD) and is for classifying the genotype-sex interaction effect with pvalue_Stage1 < 0.05
 •	Column "pvalue_Stage1" gives the p value for the role of genotype without adjustment
-•	Column "pvalue_Stage2" gives the  p value for the role of genotype*sex interaction without adjustment
+•	Column "pvalue_Stage2" gives the  p value for the role of genotype-sex interaction without adjustment
 •	Column "sep_FvKO_pval" and "sep_MvKO_pval" give the individual p values for comparing KO female vs. WT female or comparing KO male vs. WT male
 •	Column "ctrl_sex_pval" and "KO_sex_pval" give the individual p values for comparing WT male vs. WT female comparing KO male vs. KO female
+
 
 6b.	Spreadsheet 2:
 •	This Spreadsheet is generated from the the R.code: (5_PHENO_genoSD) and is a summary of 30 KO starins to generate pie chart in Figure 3b
