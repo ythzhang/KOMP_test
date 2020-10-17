@@ -374,7 +374,7 @@ for(g in 2 : length(unique_genes)){
   
   sep_allKO_pval[[current_gene]] = sep_allKO_estimate[[current_gene]] = c()
   sep_FvKO_pval[[current_gene]] = sep_FvKO_estimate[[current_gene]] = sep_MvKO_pval[[current_gene]] = sep_MvKO_estimate[[current_gene]] = c()
-
+  
   foldchange_FvKO[[current_gene]] = c()
   foldchange_MvKO[[current_gene]] = c()
   
@@ -385,7 +385,7 @@ for(g in 2 : length(unique_genes)){
   for(i in 1 : nrow(Phenotype_e_no_mising)){
     
     if((sum(is.na(current_e[i, ])) >= (ncol(current_e)-2))|(sum(is.na(null_e[i, ])) >= (ncol(null_e)-6))){
-    
+      
       Normality_before[[current_gene]][i] <- NA
       Normality_F[[current_gene]][i] <- NA
       Normality_M[[current_gene]][i] <- NA
@@ -473,8 +473,8 @@ for(g in 2 : length(unique_genes)){
           numb_gene[[current_gene]][i] <- sum(dataset$genotype %in% "Gene")
           
         }else if(length(u_F) == 1 & length(u_M) > 1) {
-         
-           Normality_before[[current_gene]][i] <- shapiro.test(dataset$PHenoVAlue_raw)$p.value
+          
+          Normality_before[[current_gene]][i] <- shapiro.test(dataset$PHenoVAlue_raw)$p.value
           Normality_F[[current_gene]][i] <- NA
           Normality_M[[current_gene]][i] <- shapiro.test(dataset$PHenoVAlue[dataset$sex %in% "Male"])$p.value
           
@@ -491,23 +491,23 @@ for(g in 2 : length(unique_genes)){
           numb_gene[[current_gene]][i] <- sum(dataset$genotype %in% "Gene")   
         }
         
-
-      
-      model_formula_nul <- null_model_genotype(dataset, "PHenoVAlue")
-      model_formula_genotype <- final_genotype_model(dataset, "PHenoVAlue")
-      geno_effect <- testing_genotype_effect(dataset, "PHenoVAlue")
-      
-      #pvalue_genotype effect
-      formula_interaction_null <- null_model_Interaction(dataset, "PHenoVAlue")
-      Interct_effect <- testing_Interaction_effect(dataset, "PHenoVAlue")
-      
-      # formula_sex_null <- null_model_sex(dataset, "PHenoVAlue")
-      # sex_effect <- testing_sex_effect(dataset, "PHenoVAlue")
-      #pvalue_SD
-      result <- gls(PHenoVAlue~genotype+sex+genotype*sex, data = dataset, na.action = 'na.exclude')
-      summary <- nlme:::summary.gls(model_afterFIXED)$tTable
-
-       
+        
+        
+        model_formula_nul <- null_model_genotype(dataset, "PHenoVAlue")
+        model_formula_genotype <- final_genotype_model(dataset, "PHenoVAlue")
+        geno_effect <- testing_genotype_effect(dataset, "PHenoVAlue")
+        
+        #pvalue_genotype effect
+        formula_interaction_null <- null_model_Interaction(dataset, "PHenoVAlue")
+        Interct_effect <- testing_Interaction_effect(dataset, "PHenoVAlue")
+        
+        # formula_sex_null <- null_model_sex(dataset, "PHenoVAlue")
+        # sex_effect <- testing_sex_effect(dataset, "PHenoVAlue")
+        #pvalue_SD
+        result <- gls(PHenoVAlue~genotype+sex+genotype*sex, data = dataset, na.action = 'na.exclude')
+        summary <- nlme:::summary.gls(model_afterFIXED)$tTable
+        
+        
         pvalue_Stage1[[current_gene]][i] <- geno_effect
         pvalue_Stage2[[current_gene]][i] <- Interct_effect
         
