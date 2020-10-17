@@ -3,7 +3,7 @@
 
 ### The content of this folder
 
-The materials listed in this folder are provided to give statistical analysis for manuscript "Strong sexual dimorphism of plasma metabolites in 30 KO strains by multi-platform mass spectrometry analysis"
+The materials listed in this folder are provided to give statistical analysis for manuscript "Sexual dimorphism of plasma metabolites in 30 KO mouse strains by multi-platform mass spectrometry analysis"
 
 Note: 
 1. Folders are neither linear nor independent.  Some figures/tables require multiple preceding steps which due to their size and their goal are housed in separate folders.
