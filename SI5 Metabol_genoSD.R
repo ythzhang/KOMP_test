@@ -268,10 +268,8 @@ for(g in 2:length(unique_genes)){
       Normality_before[[current_gene]][i] <- NA
       Normality_F[[current_gene]][i] <- NA
       Normality_M[[current_gene]][i] <- NA
-      
       pvalue_Stage1[[current_gene]][i] <- NA
       pvalue_Stage2[[current_gene]][i] <- NA
-      
       ctrl_sex_pval[[current_gene]][i] = ctrl_sex_estimate[[current_gene]][i] <- NA
       KO_sex_pval[[current_gene]][i] = KO_sex_estimate[[current_gene]][i] <- NA
       
