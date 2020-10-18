@@ -398,3 +398,54 @@ for(i in 1 : length(names(pvalue_Stage1))){
   fwrite(data.table(label = All_Metabolomics_f$label, assay = All_Metabolomics_f$Assay, Metabolite=All_Metabolomics_f$CompoundName, Normality_before = Normality_before[[i]], Normality_F = Normality_F[[i]],  Normality_M = Normality_M[[i]] , numb_null = numb_null[[i]], numb_gene = numb_gene[[i]], pvalue_Stage1 = pvalue_Stage1[[i]], pvalue_stage2 = pvalue_Stage2[[i]], sep_allKO_pval = sep_allKO_pval[[i]], sep_allKO_estimate = sep_allKO_estimate[[i]], sep_FvKO_pval = sep_FvKO_pval[[i]], sep_FvKO_estimate = sep_FvKO_estimate[[i]], sep_MvKO_pval = sep_MvKO_pval[[i]], sep_MvKO_estimate = sep_MvKO_estimate[[i]], foldchange_FvKO = foldchange_FvKO[[i]], foldchange_MvKO = foldchange_MvKO[[i]], ctrl_sex_pval = ctrl_sex_pval[[i]], ctrl_sex_estimate = ctrl_sex_estimate[[i]], KO_sex_pval= KO_sex_pval[[i]], KO_sex_estimate = KO_sex_estimate[[i]]), paste0("5 TwoStage METAbol_KOSEX,(",names(pvalue_Stage1)[i],").csv"))
 }
 
+
+#5 classification for pie chart and bar plot: Metabolite variable / genptype*sex interaction effect and direction
+setwd("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+# read filelist
+files_metmerge<-list.files(pattern="^5 TwoStage PHENOtype (.*),genoSD",full.names = T)
+#load genelist
+GeneList<-read.csv("GeneList.csv",header = TRUE)
+GeneList<-(GeneList$Genotype)
+Genelist<-as.character(GeneList)
+
+PieChart_Diff_Dirct<-data.frame(matrix(ncol = 14, nrow = 0))
+coltitle<-c('Genotype','Different direction',"Different direction2",'Different size',"Different size2","One sex_Female only", "One sex_Male only","One sex_Female only2","One sex_Male only2", "cannot classify", "cannot classify2","Genotype effect with no sex effect(real)",'Not Significant',"Metabolites count")
+colnames(PieChart_Diff_Dirct)<-coltitle
+#genotype effect classification for each genotype
+for (i in 1:length(files_metmerge)){
+  # read file
+  met<-read.csv(files_metmerge[i])  
+  g<-i
+  print(i)
+  met1<-met[!is.na(met$pvalue_Stage1),]
+  met1$est_dirct<-"Not significant"
+  t<-length(met1$pvalue_Stage1)
+  met1$est_dirct[(met1$pvalue_Stage1 < 0.05&met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval < 0.05&met1$sep_MvKO_pval < 0.05 )& ((met1$sep_FvKO_estimate>0& met1$sep_MvKO_estimate<0) | (met1$sep_FvKO_estimate<0 & met1$sep_MvKO_estimate>0))] = "Different direction"
+  met1$est_dirct[(met1$pvalue_Stage1 < 0.05&met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval < 0.05 & met1$sep_MvKO_pval < 0.05) & ((met1$sep_FvKO_estimate>0 & met1$sep_MvKO_estimate>0)  | (met1$sep_FvKO_estimate<0 & met1$sep_MvKO_estimate<0))] = "Different size"
+  met1$est_dirct[(met1$pvalue_Stage1 < 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval < 0.05&met1$sep_MvKO_pval >= 0.05)] = "One sex_Female only"
+  met1$est_dirct[(met1$pvalue_Stage1 < 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval >= 0.05&met1$sep_MvKO_pval < 0.05)] = "One sex_Male only"
+  met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval < 0.05&met1$sep_MvKO_pval < 0.05 )& ((met1$sep_FvKO_estimate>0& met1$sep_MvKO_estimate<0) | (met1$sep_FvKO_estimate<0 & met1$sep_MvKO_estimate>0))] = "Different direction2"
+  met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval < 0.05 & met1$sep_MvKO_pval < 0.05) & ((met1$sep_FvKO_estimate>0 & met1$sep_MvKO_estimate>0)  | (met1$sep_FvKO_estimate<0 & met1$sep_MvKO_estimate<0))] = "Different size2"
+  met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval < 0.05&met1$sep_MvKO_pval >= 0.05)] = "One sex_Female only2"
+  met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval >= 0.05&met1$sep_MvKO_pval < 0.05)] = "One sex_Male only2"
+  met1$est_dirct[(met1$pvalue_Stage1 < 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval >= 0.05&met1$sep_MvKO_pval >= 0.05 )] = "cannot classify"
+  met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval >= 0.05&met1$sep_MvKO_pval >= 0.05 )] = "cannot classify2"
+  met1$est_dirct[(met1$pvalue_Stage1 < 0.05 & met1$pvalue_stage2 >= 0.05)] = "Genotype effect with no sex effect(real)"                 
+  
+  a<-sum(met1$est_dirct == "Different direction")
+  a1<-sum(met1$est_dirct == "Different direction2")
+  b <- sum(met1$est_dirct == "Different size")
+  b1 <- sum(met1$est_dirct == "Different size2")
+  c <- sum(met1$est_dirct == "One sex_Female only")
+  c1 <- sum(met1$est_dirct == "One sex_Male only")
+  c2 <- sum(met1$est_dirct == "One sex_Female only2")
+  c3 <- sum(met1$est_dirct == "One sex_Male only2")
+  d<-sum(met1$est_dirct=="cannot classify")
+  d1<-sum(met1$est_dirct=="cannot classify2")
+  e<-sum(met1$est_dirct=="Genotype effect with no sex effect(real)")
+  n<-sum(met1$est_dirct=="Not significant")
+  PieChart_Diff_Dirct<-rbind(PieChart_Diff_Dirct,c(g,a,a1,b,b1,c,c1,c2,c3,d,d1,e,n,t))
+  colnames(PieChart_Diff_Dirct)<-coltitle 
+}
+write.csv(PieChart_Diff_Dirct,file = "5 Metabol_classification.csv")
+
