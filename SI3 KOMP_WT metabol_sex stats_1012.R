@@ -43,7 +43,6 @@ sum(Null_Metabolomics_e == "Inf")
 ## 1 wild - sex
 ## 1a: wildtype mice - sex
 ### deal with missing values: filter missing value > 70%, replace other missing values.
-
 ### subset data for wildtype male mice and calculate percentage of missing values
 num_missing_male <- apply(Null_Metabolomics_e, 1, function(x){
   sum(is.na(x[Null_Metabolomics_p$Gender %in% "Male"]))
@@ -59,7 +58,6 @@ names(num_missing_male) = names(num_missing_female) = Null_Metabolomics_f$label
 missing_index <- ((num_missing_male/ sum(Null_Metabolomics_p$Gender %in% "Male")) >= 0.7) & ((num_missing_female/ sum(Null_Metabolomics_p$Gender %in% "Female")) >= 0.7)
 Null_Metabolomics_e <- Null_Metabolomics_e[!missing_index, ]
 Null_Metabolomics_f <- Null_Metabolomics_f[!missing_index, ]
-
 
 ### replace missing values by half minimum of the values in each metabolite variable
 for(i in 1:nrow(Null_Metabolomics_e)){
@@ -91,7 +89,6 @@ for (i in 1:nrow(Null_Metabolomics_e)){
   outliers_nullM<-boxplot.stats(Null_Metabol$Intensity_trans[Null_Metabol$Gender%in%'Male'])$out
   ### remove outliers if necessary
   if(length(outliers_nullF) > 0 & length(outliers_nullM) > 0){
-  
   Label_outlier <- c(which(Null_Metabol$Intensity_trans %in% outliers_nullF[[1]]), which(Null_Metabol$Intensity_trans %in% outliers_nullM[[1]]))
   Null_Metabol_new <- Null_Metabol [-Label_outlier,]
   }else if(length(outliers_nullF) > 0 & length(outliers_nullM) == 0){
@@ -116,35 +113,31 @@ for (i in 1:nrow(Null_Metabolomics_e)){
   }else{
     Normality_F[i] <- shapiro.test(Null_Metabol_new_F$Intensity_trans)$p.value 
   }
-  
+  #subset data by sex
   Null_e_M <- Null_Metabol_new[Null_Metabol_new$Gender %in% "Male", ]
   Null_e_F <- Null_Metabol_new[Null_Metabol_new$Gender %in% "Female", ]
   
   # test sex as biological variable using gls() model
   WT_sex_stats <- tryCatch({
-    
     gls(Intensity_trans ~ Gender, Null_Metabol_new, na.action = 'na.exclude')
   }, error = function(er){
     NA
   })
-  
+  #p-values
   if(length(WT_sex_stats) <= 1){
     p_val1[i] = NA
     Coef1[i] = NA
   }else{
-    
     p_val1[i] = nlme:::summary.gls( WT_sex_stats)$tTable[2,4]
     Coef1[i] = nlme:::summary.gls( WT_sex_stats)$tTable[2,1]
   }
   
   ### calculate fold-changes for each metabolite variable using female mice as reference
   fc1[i]=  mean(Null_Metabol_new$Intensity[Null_Metabol_new$Gender %in% "Male"])/mean(Null_Metabol_new$Intensity[Null_Metabol_new$Gender %in% "Female"])
-  
 }
 
 ### adjustment method using ("BH" or its alias "fdr")
 p_val_adj1 = p.adjust(p_val1, method = "fdr")
-
 ### calculate significant ratio
 sum(p_val1<0.05)/length(p_val1)
 sum(p_val_adj1<0.05)/length(p_val1)
@@ -171,7 +164,6 @@ body_weight_all = Phenotype_weight_e[Phenotype_weight_f$label %in% "IMPC_HWT_007
 test1_Norma = Normality_F = Normality_M = F_Count = M_Count = p_val2 = Coef2 = fc2 = p_val_adj2 = c()
 
 for (i in 1 : nrow(Null_Metabolomics_e)){
-  
   ###test normality
   test1_Norma[i] <- shapiro.test(Null_Metabolomics_e[i, ])$p.value
   ###transform data
@@ -182,7 +174,6 @@ for (i in 1 : nrow(Null_Metabolomics_e)){
   outliers_nullM <- boxplot.stats(Null_Metabolomics_e_trans[Null_Metabolomics_p$Gender %in% 'Male'])$out
   ### remove outliers if necessary
   if( length(outliers_nullF) > 0 & length(outliers_nullM) > 0){
-    
     Label_outlier <- c(which(Null_Metabolomics_e_trans %in% outliers_nullF[[1]]), which(Null_Metabolomics_e_trans %in% outliers_nullM[[1]]))
     Null_Metabolomics_e_trans_New <- Null_Metabolomics_e_trans[-Label_outlier]
     Null_raw_e_new <- Null_Metabolomics_e[i,][-Label_outlier]
@@ -223,18 +214,15 @@ for (i in 1 : nrow(Null_Metabolomics_e)){
   
   ### test sex as covariable and adjusted to bosy weight using gls() model
   WT_sex_stats <- tryCatch({
-    
     gls(MetaboVAlue ~ Gender + Weight, Null_Metabolomics_e_Stats, na.action = 'na.exclude')
   }, error = function(er){
     NA
   })
-  
+  #p-values
   if(length(WT_sex_stats) <= 1){
-    p_val1[i] = NA
-    Coef1[i] = NA
-    
+    p_val2[i] = NA
+    Coef2[i] = NA
   }else{
-    
     p_val2[i] = nlme:::summary.gls(WT_sex_stats)$tTable[2,4]
     Coef2[i] = nlme:::summary.gls(WT_sex_stats)$tTable[2,1]
   }
