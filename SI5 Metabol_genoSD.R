@@ -10,7 +10,6 @@ library(RNOmni)
 # library(car)
 # Function 1: build model for testing fixed effects
 # Assumption: assume no batch effect and weight is not a independet variance 
-
 model_forFIXEDtest<-function(dataset, Intensity){
   model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", "genotype*sex", sep= "+")))
   model=gls(model.formula, dataset, na.action="na.omit")
@@ -22,7 +21,6 @@ model_forFIXEDtest<-function(dataset, Intensity){
 #                 alternative hypothesis that the regression coefficient are not equal to zero.
 # the null hypothesis was rejected when p-values < 0.05 (e.g.,accept the alternative hypothesis, the components of the model should be included in later analysis)
 # Note a complexity surrounds the interaction term  - if it is significant but gender is excluded it is excluded. 
-
 final_genotype_model<-function(dataset, Intensity){
   model_afterFIXED=model_forFIXEDtest(dataset, Intensity)
   anova_results = anova(model_afterFIXED, type="marginal")$"p-value" < 0.05
@@ -221,7 +219,6 @@ for(g in 2:length(unique_genes)){
   foldchange_FvKO[[current_gene]] = foldchange_MvKO[[current_gene]] = c()
   ctrl_sex_pval[[current_gene]] = ctrl_sex_estimate[[current_gene]] = c() 
   KO_sex_pval[[current_gene]] = KO_sex_estimate[[current_gene]] = c()
-  
   # statistical test for each metabolite variable for each genotyope
   for(i in 1 : nrow(All_Metabolomics_e_no_mising)){
     # if missing values > 70%, then not significant 
@@ -230,15 +227,15 @@ for(g in 2:length(unique_genes)){
       Normality_before[[current_gene]][i] <- NA
       Normality_F[[current_gene]][i] <- NA
       Normality_M[[current_gene]][i] <- NA
+      #p-values not available, NA
       pvalue_Stage1[[current_gene]][i] <- NA
       pvalue_Stage2[[current_gene]][i] <- NA
       ctrl_sex_pval[[current_gene]][i] = ctrl_sex_estimate[[current_gene]][i] <- NA
       KO_sex_pval[[current_gene]][i] = KO_sex_estimate[[current_gene]][i] <- NA
-      
       sep_allKO_pval[[current_gene]][i] = sep_allKO_estimate[[current_gene]][i] <- NA
       sep_FvKO_pval[[current_gene]][i] = sep_FvKO_estimate[[current_gene]][i] <- NA
       sep_MvKO_pval[[current_gene]][i] = sep_MvKO_estimate[[current_gene]][i] <- NA
-      
+      #foldchange NA
       foldchange_FvKO[[current_gene]][i] <- NA
       foldchange_MvKO[[current_gene]][i] <- NA
     }else{
@@ -271,7 +268,6 @@ for(g in 2:length(unique_genes)){
         #p-values NA
         pvalue_Stage1[[current_gene]][i] <- NA
         pvalue_Stage2[[current_gene]][i] <- NA
-        
         ctrl_sex_pval[[current_gene]][i] = ctrl_sex_estimate[[current_gene]][i] <- NA 
         KO_sex_pval[[current_gene]][i] = KO_sex_estimate[[current_gene]][i] <- NA
         sep_allKO_pval[[current_gene]][i] = sep_allKO_estimate[[current_gene]][i] <- NA
@@ -288,7 +284,6 @@ for(g in 2:length(unique_genes)){
         # test normality after data transformation for male and female mice
         Normality_F[[current_gene]][i] <- shapiro.test(data_raw$Intensity[data_raw$sex %in% "Female"])$p.value
         Normality_M[[current_gene]][i] <- shapiro.test(data_raw$Intensity[data_raw$sex %in% "Male"])$p.value
-        
         #count number of WT mice and KO mice
         numb_null[[current_gene]][i] <- sum(dataset$genotype %in% "Control")
         numb_gene[[current_gene]][i] <- sum(dataset$genotype %in% "Gene")
@@ -301,13 +296,12 @@ for(g in 2:length(unique_genes)){
         #test genotype*sex interaction effect
         formula_interaction_null <- null_model_Interaction(dataset, "Intensity")
         Interct_effect <- testing_Interaction_effect(dataset, "Intensity")
-        
         result <- gls(Intensity ~ genotype + sex + genotype*sex, data = dataset, na.action = 'na.exclude')
         summary <- nlme:::summary.gls(result)$tTable 
         #p-values
         pvalue_Stage1[[current_gene]][i] <- geno_effect
         pvalue_Stage2[[current_gene]][i] <- Interct_effect
-        
+    
         # Individual test for classying the SD effect without grouping by sex
         result_all<- tryCatch({
           gls(Intensity ~ genotype, data = dataset, na.action = 'na.exclude')
