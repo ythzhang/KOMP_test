@@ -27,7 +27,6 @@ library(RNOmni)
 # Read data file Supplementary Data 1 for the analysis of Metabolomics data in wildtype mice
 setwd("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 Null_Metabolomics <- wcmc::read_data("Supplementary Data 1.xlsx")
-
 Null_Metabolomics_p <- Null_Metabolomics$p
 Null_Metabolomics_f <- Null_Metabolomics$f
 Null_Metabolomics_e <- Null_Metabolomics$e_matrix
@@ -63,7 +62,6 @@ Null_Metabolomics_f <- Null_Metabolomics_f[!missing_index, ]
 for(i in 1:nrow(Null_Metabolomics_e)){
   Null_Metabolomics_e[i,is.na(Null_Metabolomics_e[i,])] = 0.5 * min(Null_Metabolomics_e[i,], na.rm = TRUE)
 }
-
 rownames(Null_Metabolomics_e) = Null_Metabolomics_f$label
 
 ## statistics
@@ -83,7 +81,6 @@ for (i in 1:nrow(Null_Metabolomics_e)){
   Null_Metabol$Intensity_trans <- rankNorm(Null_Metabol$Intensity)
   Null_Metabolomics_f$CompoundName[i]  
   Null_Metabolomics_f$label[i] 
-  
   ### find outlier
   outliers_nullF<-boxplot.stats(Null_Metabol$Intensity_trans[Null_Metabol$Gender%in%'Female'])$out
   outliers_nullM<-boxplot.stats(Null_Metabol$Intensity_trans[Null_Metabol$Gender%in%'Male'])$out
@@ -116,7 +113,6 @@ for (i in 1:nrow(Null_Metabolomics_e)){
   #subset data by sex
   Null_e_M <- Null_Metabol_new[Null_Metabol_new$Gender %in% "Male", ]
   Null_e_F <- Null_Metabol_new[Null_Metabol_new$Gender %in% "Female", ]
-  
   # test sex as biological variable using gls() model
   WT_sex_stats <- tryCatch({
     gls(Intensity_trans ~ Gender, Null_Metabol_new, na.action = 'na.exclude')
