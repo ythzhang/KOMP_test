@@ -431,7 +431,6 @@ for (i in 1:length(files_metmerge)){
   met1$est_dirct[(met1$pvalue_Stage1 < 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval >= 0.05&met1$sep_MvKO_pval >= 0.05 )] = "cannot classify"
   met1$est_dirct[(met1$pvalue_Stage1 >= 0.05 & met1$pvalue_stage2 < 0.05)&(met1$sep_FvKO_pval >= 0.05&met1$sep_MvKO_pval >= 0.05 )] = "cannot classify2"
   met1$est_dirct[(met1$pvalue_Stage1 < 0.05 & met1$pvalue_stage2 >= 0.05)] = "Genotype effect with no sex effect(real)"                 
-  
   a<-sum(met1$est_dirct == "Different direction")
   a1<-sum(met1$est_dirct == "Different direction2")
   b <- sum(met1$est_dirct == "Different size")
