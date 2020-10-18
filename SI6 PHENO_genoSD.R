@@ -547,3 +547,54 @@ for(i in 1:length(names(pvalue_Stage1))){
   fwrite(data.table(label = Phenotype_f$label, Phenotype = Phenotype_f$`Parameter name`, Normality_before = Normality_before[[i]], Normality_after = Normality_after[[i]], Normality_F =Normality_F[[i]], Normality_M =Normality_M[[i]], numb_null=numb_null[[i]],numb_gene=numb_gene[[i]], pvalue_Stage1=pvalue_Stage1[[i]],pvalue_stage1.5=pvalue_Stage1.5[[i]], pvalue_stage2=pvalue_Stage2[[i]], fdr_Stage1=fdr_Stage1[[i]], fdr_Stage1.5=fdr_Stage1.5[[i]], fdr_Stage2=fdr_Stage2[[i]], sep_allKO_pval = sep_allKO_pval[[i]], sep_allKO_estimate= sep_allKO_estimate[[i]], sep_FvKO_pval=sep_FvKO_pval[[i]], sep_FvKO_estimate= sep_FvKO_estimate[[i]], sep_MvKO_pval=sep_MvKO_pval[[i]], sep_MvKO_estimate= sep_MvKO_estimate[[i]],sep_FvKO_fdr=p.adjust(sep_FvKO_pval[[i]],'fdr'), sep_MvKO_fdr=p.adjust(sep_MvKO_pval[[i]],'fdr'), foldchange_all= foldchange_all[[i]], foldchange_FvKO = foldchange_FvKO[[i]], foldchange_MvKO = foldchange_MvKO[[i]], ctrl_sex_pval= ctrl_sex_pval[[i]], ctrl_sex_estimate = ctrl_sex_estimate[[i]], fdr_ctrl_sex = fdr_ctrl_sex[[i]], KO_sex_pval= KO_sex_pval[[i]], KO_sex_estimate = KO_sex_estimate[[i]], fdr_KO_sex = fdr_KO_sex[[i]]), paste0("5 TwoStage PHENOtype (",names(pvalue_Stage1)[i],"),genoSD.csv"))
 }
 
+
+#6 information extraction for pie chart: Phenotype / genptype*sex interaction effect and direction
+setwd("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+# read filelist
+files_metmerge<-list.files(pattern="^5 TwoStage PHENOtype (.*),genoSD",full.names = T)
+#load genelist
+GeneList<-read.csv("GeneList.csv",header = TRUE)
+GeneList<-(GeneList$Genotype)
+Genelist<-as.character(GeneList)
+
+PieChart_Diff_Dirct<-data.frame(matrix(ncol = 14, nrow = 0))
+coltitle<-c('Genotype','Different direction',"Different direction2",'Different size',"Different size2","One sex_Female only", "One sex_Male only","One sex_Female only2","One sex_Male only2", "cannot classify", "cannot classify2","Genotype effect with no sex effect(real)",'Not Significant',"Metabolites count")
+colnames(PieChart_Diff_Dirct)<-coltitle
+#genotype effect classification for each genotype
+for (i in 1:length(files_metmerge)){
+  # read file
+  pheno<-read.csv(files_metmerge[i])  
+  g<-i
+  print(i)
+  pheno1<-met[!is.na(met$pvalue_Stage1),]
+  pheno1$est_dirct<-"Not significant"
+  t<-length(pheno1$pvalue_Stage1)
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 < 0.05&pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval < 0.05&pheno1$sep_MvKO_pval < 0.05 )& ((pheno1$sep_FvKO_estimate>0& pheno1$sep_MvKO_estimate<0) | (pheno1$sep_FvKO_estimate<0 & pheno1$sep_MvKO_estimate>0))] = "Different direction"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 < 0.05&pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval < 0.05 & pheno1$sep_MvKO_pval < 0.05) & ((pheno1$sep_FvKO_estimate>0 & pheno1$sep_MvKO_estimate>0)  | (pheno1$sep_FvKO_estimate<0 & pheno1$sep_MvKO_estimate<0))] = "Different size"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 < 0.05 & pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval < 0.05&pheno1$sep_MvKO_pval >= 0.05)] = "One sex_Female only"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 < 0.05 & pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval >= 0.05&pheno1$sep_MvKO_pval < 0.05)] = "One sex_Male only"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 >= 0.05 & pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval < 0.05&pheno1$sep_MvKO_pval < 0.05 )& ((pheno1$sep_FvKO_estimate>0& pheno1$sep_MvKO_estimate<0) | (pheno1$sep_FvKO_estimate<0 & pheno1$sep_MvKO_estimate>0))] = "Different direction2"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 >= 0.05 & pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval < 0.05 & pheno1$sep_MvKO_pval < 0.05) & ((pheno1$sep_FvKO_estimate>0 & pheno1$sep_MvKO_estimate>0)  | (pheno1$sep_FvKO_estimate<0 & pheno1$sep_MvKO_estimate<0))] = "Different size2"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 >= 0.05 & pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval < 0.05&pheno1$sep_MvKO_pval >= 0.05)] = "One sex_Female only2"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 >= 0.05 & pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval >= 0.05&pheno1$sep_MvKO_pval < 0.05)] = "One sex_Male only2"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 < 0.05 & pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval >= 0.05&pheno1$sep_MvKO_pval >= 0.05 )] = "cannot classify"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 >= 0.05 & pheno1$pvalue_stage2 < 0.05)&(pheno1$sep_FvKO_pval >= 0.05&pheno1$sep_MvKO_pval >= 0.05 )] = "cannot classify2"
+  pheno1$est_dirct[(pheno1$pvalue_Stage1 < 0.05 & pheno1$pvalue_stage2 >= 0.05)] = "Genotype effect with no sex effect(real)"                 
+  
+  a<-sum(pheno1$est_dirct == "Different direction")
+  a1<-sum(pheno1$est_dirct == "Different direction2")
+  b <- sum(pheno1$est_dirct == "Different size")
+  b1 <- sum(pheno1$est_dirct == "Different size2")
+  c <- sum(pheno1$est_dirct == "One sex_Female only")
+  c1 <- sum(pheno1$est_dirct == "One sex_Male only")
+  c2 <- sum(pheno1$est_dirct == "One sex_Female only2")
+  c3 <- sum(pheno1$est_dirct == "One sex_Male only2")
+  d<-sum(pheno1$est_dirct=="cannot classify")
+  d1<-sum(pheno1$est_dirct=="cannot classify2")
+  e<-sum(pheno1$est_dirct=="Genotype effect with no sex effect(real)")
+  n<-sum(pheno1$est_dirct=="Not significant")
+  PieChart_Diff_Dirct<-rbind(PieChart_Diff_Dirct,c(g,a,a1,b,b1,c,c1,c2,c3,d,d1,e,n,t))
+  colnames(PieChart_Diff_Dirct)<-coltitle 
+}
+write.csv(PieChart_Diff_Dirct,file = "6 PHENO_classification.csv")
+
