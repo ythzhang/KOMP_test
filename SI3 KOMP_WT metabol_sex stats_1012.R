@@ -72,18 +72,17 @@ rownames(Null_Metabolomics_e) = Null_Metabolomics_f$label
 ########################################################################
 #Load packages used for statistics
 library(nlme)
-test1_Norma = Normality_F = Normality_M = F_Count = M_Count  = Coef1 = p_val1 = fc1 = p_val_adj1= c()
+test1_Norma = Normality_F = Normality_M = F_Count = M_Count  = Coef1 = p_val1 = fc1 = p_val_adj1 = c()
 
 for (i in 1:nrow(Null_Metabolomics_e)){
-
+  #construct dataframe
   Null_Metabol <- data.table(Intensity = Null_Metabolomics_e[i,], Gender=Null_Metabolomics_p$Gender)
-  
+  #remove missing vaues
   Null_Metabol <- Null_Metabol[!is.na(Null_Metabol$Intensity), ]
  
   ### transform data
   test1_Norma[i] <- shapiro.test(Null_Metabol$Intensity)$p.value
   Null_Metabol$Intensity_trans <- rankNorm(Null_Metabol$Intensity)
-
   Null_Metabolomics_f$CompoundName[i]  
   Null_Metabolomics_f$label[i] 
   
@@ -92,27 +91,19 @@ for (i in 1:nrow(Null_Metabolomics_e)){
   outliers_nullM<-boxplot.stats(Null_Metabol$Intensity_trans[Null_Metabol$Gender%in%'Male'])$out
   ### remove outliers if necessary
   if(length(outliers_nullF) > 0 & length(outliers_nullM) > 0){
-    
+  
   Label_outlier <- c(which(Null_Metabol$Intensity_trans %in% outliers_nullF[[1]]), which(Null_Metabol$Intensity_trans %in% outliers_nullM[[1]]))
   Null_Metabol_new <- Null_Metabol [-Label_outlier,]
-  
   }else if(length(outliers_nullF) > 0 & length(outliers_nullM) == 0){
-    
     Label_outlier <- c(which(Null_Metabol$Intensity_trans %in% outliers_nullF[[1]]))
     Null_Metabol_new <- Null_Metabol [-Label_outlier, ]
-
   }else if(length(outliers_nullF) == 0 & length(outliers_nullM) > 0){
-    
     Label_outlier <- c(which(Null_Metabol$Intensity_trans %in% outliers_nullM[[1]]))
     Null_Metabol_new <- Null_Metabol[-Label_outlier, ]
-    
   }else{
-    
     Null_Metabol_new <- Null_Metabol
-  
   }
-  
-  
+  # count number for female and male mice
   F_Count[i] <- sum((Null_Metabol_new$Gender %in% "Female"))      
   M_Count[i] <- sum(Null_Metabol_new$Gender %in% "Male")
   
@@ -133,7 +124,6 @@ for (i in 1:nrow(Null_Metabolomics_e)){
   WT_sex_stats <- tryCatch({
     
     gls(Intensity_trans ~ Gender, Null_Metabol_new, na.action = 'na.exclude')
-    
   }, error = function(er){
     NA
   })
@@ -141,12 +131,10 @@ for (i in 1:nrow(Null_Metabolomics_e)){
   if(length(WT_sex_stats) <= 1){
     p_val1[i] = NA
     Coef1[i] = NA
-    
   }else{
     
     p_val1[i] = nlme:::summary.gls( WT_sex_stats)$tTable[2,4]
     Coef1[i] = nlme:::summary.gls( WT_sex_stats)$tTable[2,1]
-    
   }
   
   ### calculate fold-changes for each metabolite variable using female mice as reference
@@ -192,7 +180,6 @@ for (i in 1 : nrow(Null_Metabolomics_e)){
   ### find outlier
   outliers_nullF <- boxplot.stats(Null_Metabolomics_e_trans[Null_Metabolomics_p$Gender %in% 'Female'])$out
   outliers_nullM <- boxplot.stats(Null_Metabolomics_e_trans[Null_Metabolomics_p$Gender %in% 'Male'])$out
-  
   ### remove outliers if necessary
   if( length(outliers_nullF) > 0 & length(outliers_nullM) > 0){
     
@@ -200,32 +187,24 @@ for (i in 1 : nrow(Null_Metabolomics_e)){
     Null_Metabolomics_e_trans_New <- Null_Metabolomics_e_trans[-Label_outlier]
     Null_raw_e_new <- Null_Metabolomics_e[i,][-Label_outlier]
     Null_Metabolomics_p_New <- Null_Metabolomics_p[-Label_outlier]
-    
   }else if(length(outliers_nullF) > 0 & length(outliers_nullM) == 0){
-    
     Label_outlier <- c(which(Null_Metabolomics_e_trans %in% outliers_nullF[[1]]))
     Null_Metabolomics_e_trans_New <- Null_Metabolomics_e_trans[-Label_outlier]
     Null_raw_e_new <- Null_Metabolomics_e[i,][-Label_outlier]
     Null_Metabolomics_p_New <- Null_Metabolomics_p[-Label_outlier]
-    
   }else if(length(outliers_nullF) == 0 & length(outliers_nullM) > 0){
-    
     Label_outlier <- c(which(Null_Metabolomics_e_trans %in% outliers_nullM[[1]]))
     Null_Metabolomics_e_trans_New <- Null_Metabolomics_e_trans[-Label_outlier]
     Null_raw_e_new <- Null_Metabolomics_e[i,][-Label_outlier]
     Null_Metabolomics_p_New <- Null_Metabolomics_p[-Label_outlier]
-    
   }else{
-    
     Null_Metabolomics_e_trans_New <- Null_Metabolomics_e_trans
     Null_raw_e_new <- Null_Metabolomics_e[i,]
     Null_Metabolomics_p_New <- Null_Metabolomics_p
   }
   
-  
   Null_Metabolomics_e_Stats <- data.table(Null_Metabolomics_p_New$Gender, Null_raw_e_new, Null_Metabolomics_e_trans_New, body_weight_all[names(body_weight_all) %in% Null_Metabolomics_p_New$label])
   colnames(Null_Metabolomics_e_Stats) <- c("Gender","MetaboVAlue_raw","MetaboVAlue","Weight")
-  
   ### need to remove data for which body weight was not available
   Null_Metabolomics_e_Stats <- Null_Metabolomics_e_Stats[!is.na(Null_Metabolomics_e_Stats$Weight),]
 
@@ -237,7 +216,6 @@ for (i in 1 : nrow(Null_Metabolomics_e)){
   if( length(unique(Null_Metabolomics_e_Stats$MetaboVAlue[Null_Metabolomics_e_Stats$Gender%in%"Female"])) == 1 ){
     Normality_M[i] <- shapiro.test(Null_Metabolomics_e_Stats$MetaboVAlue[Null_Metabolomics_e_Stats$Gender %in% "Male"])$p.value
     Normality_F[i] <- NA
-    
   }else{
     Normality_M[i] <- shapiro.test(Null_Metabolomics_e_Stats$MetaboVAlue[Null_Metabolomics_e_Stats$Gender %in% "Male"])$p.value
     Normality_F[i] <- shapiro.test(Null_Metabolomics_e_Stats$MetaboVAlue[Null_Metabolomics_e_Stats$Gender %in% "Female"])$p.value
@@ -247,7 +225,6 @@ for (i in 1 : nrow(Null_Metabolomics_e)){
   WT_sex_stats <- tryCatch({
     
     gls(MetaboVAlue ~ Gender + Weight, Null_Metabolomics_e_Stats, na.action = 'na.exclude')
-    
   }, error = function(er){
     NA
   })
@@ -260,13 +237,10 @@ for (i in 1 : nrow(Null_Metabolomics_e)){
     
     p_val2[i] = nlme:::summary.gls(WT_sex_stats)$tTable[2,4]
     Coef2[i] = nlme:::summary.gls(WT_sex_stats)$tTable[2,1]
-    
   }
   
-
   ### calculate fold-changes for each metabolite variable using female mice as reference
   fc2[i]=  mean(Null_Metabolomics_e_Stats$MetaboVAlue_raw[Null_Metabolomics_e_Stats$Gender %in% "Male"])/mean(Null_Metabolomics_e_Stats$MetaboVAlue_raw[Null_Metabolomics_e_Stats$Gender %in% "Female"])
-    
 }
 
 ### adjustment method using ("BH" or its alias "fdr")
