@@ -6,7 +6,7 @@ library(wcmc)
 #######################################################################################################
 # Load raw data file for Phenotype results
 setwd("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-Raw_Phenotype_UCDavis = wcmc::read_data("Supplementary Data 1.csv")
+Raw_Phenotype_UCDavis = wcmc::read_data("Supplementary Data 2.csv")
 Raw_Phenotype_UCDavis_p = Raw_Phenotype_UCDavis$p
 Raw_Phenotype_UCDavis_f = Raw_Phenotype_UCDavis$f
 Raw_Phenotype_UCDavis_e = Raw_Phenotype_UCDavis$e_cat_matrix
@@ -29,13 +29,13 @@ for(g in 1:length(unique_genes)){
     current_label = Raw_Phenotype_UCDavis_p$label[Raw_Phenotype_UCDavis_p$Genotype %in% c(current_gene)]
     current_e = Raw_Phenotype_UCDavis_e[, current_label]
     # subset data for each genotype female mice based on the gene symbol
-    current_label_F = Raw_Phenotype_UCDavis_p$label[Raw_Phenotype_UCDavis_p$Genotype %in% c(current_gene) & Raw_Phenotype_UCDavis_p$Gender %in% 'Female']
+    current_label_F = Raw_Phenotype_UCDavis_p$label[Raw_Phenotype_UCDavis_p$Genotype %in% c(current_gene) & Raw_Phenotype_UCDavis_p$Gender %in% "Female"]
     current_e_F = Raw_Phenotype_UCDavis_e[, current_label_F]
     # subset data for each genotype male mice based on the gene symbol
-    current_label_M = Raw_Phenotype_UCDavis_p$label[Raw_Phenotype_UCDavis_p$Genotype %in% c(current_gene) & Raw_Phenotype_UCDavis_p$Gender %in% 'Male']
+    current_label_M = Raw_Phenotype_UCDavis_p$label[Raw_Phenotype_UCDavis_p$Genotype %in% c(current_gene) & Raw_Phenotype_UCDavis_p$Gender %in% "Male"]
     current_e_M = Raw_Phenotype_UCDavis_e[,current_label_M]
     # replace missing values in WT mice
-  if (current_gene == 'null'){
+  if (current_gene == "null"){
   for(i in 1 : nrow(current_e)){
     # confirm if parameter is continuous traits or not
     continuous = sum(is.na(as.numeric(Raw_Phenotype_UCDavis_e[i,!is.na(Raw_Phenotype_UCDavis_e[i,])]))) == 0
@@ -70,31 +70,31 @@ for(g in 1:length(unique_genes)){
           current_e_F[i,] = NA
           current_e_M[i,] = NA
         }else if(sum(is.na(current_e_F[i,])) == 3 & sum(is.na(current_e_M[i,])) == 0){
-          current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min = 0.95,max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+          current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
           current_e_M[i,] = current_e_M[i,]
         }else if(sum(is.na(current_e_F[i,])) == 0 & sum(is.na(current_e_M[i,])) == 3){
           current_e_F[i,] = current_e_F[i,]
-          current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min= 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+          current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
         }else if(sum(is.na(current_e_F[i,])) == 2 & sum(is.na(current_e_M[i,])) == 1){
-          current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])), min= 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
-          current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min= 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
-        }else if(sum(is.na(current_e_F[i,]))==1 & sum(is.na(current_e_M[i,]))==2){
-          current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min= 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
-          current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min= 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+          current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])), min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+          current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+        }else if(sum(is.na(current_e_F[i,]))==1 & sum(is.na(current_e_M[i,])) == 2){
+          current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+          current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
         }else if(sum(is.na(current_e[i,])) == 2){
           if(sum(is.na(current_e_F[i,])) == 2 & sum(is.na(current_e_M[i,])) == 0){
-            current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min = 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+            current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
             current_e_M[i,] = current_e_M[i,]
           }else if(sum(is.na(current_e_F[i,])) == 0 & sum(is.na(current_e_M[i,])) == 2){
             current_e_F[i,] = current_e_F[i,]
-            current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min = 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+            current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
           }else if(sum(is.na(current_e_F[i,])) == 1 & sum(is.na(current_e_M[i,])) == 1){
-            current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min = 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
-            current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min = 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+            current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+            current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
           }
         }else if(sum(is.na(current_e[i,])) <= 1){
-          current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])), min = 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
-          current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min = 0.95, max= 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+          current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])), min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
+          current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min = 0.95, max = 1.05) * min(as.numeric(current_e[i,!is.na(current_e[i,])]))
         }
       }else{
         #when parameter is not continuous trait
@@ -117,18 +117,18 @@ str(Phenotype_e_no_mising_new)
 Phenotype_f = Raw_Phenotype_UCDavis_f
 Phenotype_p = Raw_Phenotype_UCDavis_p
 # subset data for WT mice
-null_label = Phenotype_p$label[Phenotype_p$Genotype %in% c('null')]
+null_label = Phenotype_p$label[Phenotype_p$Genotype %in% c("null")]
 null_e = Phenotype_e_no_mising_new[, null_label]
-null_p = Phenotype_p[Phenotype_p$Genotype %in% 'null',]
+null_p = Phenotype_p[Phenotype_p$Genotype %in% "null",]
 # subset data for WT female mice
-null_label = Phenotype_p$label[Phenotype_p$Genotype %in% c('null') & Phenotype_p$Gender %in% "Female"]
+null_label = Phenotype_p$label[Phenotype_p$Genotype %in% c("null") & Phenotype_p$Gender %in% "Female"]
 null_e_female = Phenotype_e_no_mising_new[, null_label]
 # subset data for WT male mice
-null_label = Phenotype_p$label[Phenotype_p$Genotype %in% c('null') & Phenotype_p$Gender %in% "Male"]
+null_label = Phenotype_p$label[Phenotype_p$Genotype %in% c("null") & Phenotype_p$Gender %in% "Male"]
 null_e_male = Phenotype_e_no_mising_new[, null_label]
 # =========================================================================================================================================
 # =========================================================================================================================================
-# 5 for each genotype, check which metabolite are associated with gene * gender, gene, gender, or not significant at all.
+# 5 for each genotype, check which metabolite are associated with genotype-gender, gene, gender, or not significant at all.
 # --------------------------------------------------------------------------------------------------------
 #load package nlme
 library(nlme)
@@ -136,9 +136,9 @@ library(nlme)
 # Function 1 function to build model for testing of fixed effects
 # Assumption: No batch effect and weight is not a independet variance 
 # Goal: 
-model_forFIXEDtest<-function(dataset, PHenoVAlue){
-  model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", "genotype*sex", sep= "+")))
-  model=gls(model.formula, dataset, na.action="na.omit")
+model_forFIXEDtest <- function(dataset, PHenoVAlue){
+  model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", "genotype:sex", sep= "+")))
+  model=gls(model.formula, dataset, na.action = "na.omit")
 }
 # -------------------------------------------------------------------------------------------------------------------------------
 #Function 2: testing the fixed effects and building genotype model formula
@@ -147,19 +147,19 @@ model_forFIXEDtest<-function(dataset, PHenoVAlue){
 #                 alternative hypothesis that the regression coefficient are not equal to zero.
 # the null hypothesis was rejected when p-values < 0.05 (e.g.,accept the alternative hypothesis, the components of the model should be included in later analysis)
 # Note a complexity surrounds the interaction term  - if it is significant but gender is excluded it is excluded. 
-final_genotype_model<-function(dataset, PHenoVAlue){
+final_genotype_model <- function(dataset, PHenoVAlue){
   model_afterFIXED=model_forFIXEDtest(dataset, PHenoVAlue)
   anova_results = anova(model_afterFIXED, type="marginal")$"p-value" < 0.05
   keepSex = anova_results[3]
   keepInteraction = anova_results[4]
   if(keepSex && keepInteraction){
-    return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", "genotype*sex", sep= "+"))))
+    return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", "genotype:sex", sep= "+"))))
   }else if(keepSex &&  !keepInteraction){
     return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", sep= "+"))))
   }else if(!keepSex &&  !keepInteraction){
     return(model.formula <- as.formula(paste(PHenoVAlue, "~", "genotype")))
   }else if(!keepSex  && keepInteraction){
-    return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", "genotype*sex", sep= "+"))))
+    return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", "genotype:sex", sep= "+"))))
   }
 }
 #---------------------------------------------------------------------------------------------------------------------------
@@ -169,8 +169,9 @@ final_genotype_model<-function(dataset, PHenoVAlue){
 # If the p-values of these tests are less than 0.05 we reject the null and accept the alternative that the are significant components of the model and should be included. 
 # If no terms are significant a model can be build with just an intercept element this is specified as  "model.formula <- as.formula(paste(depVariable, "~", "1"))"
 null_model_genotype <- function(dataset, PHenoVAlue){ 
-  model_afterFIXED=model_forFIXEDtest(dataset, PHenoVAlue)
+  model_afterFIXED = model_forFIXEDtest(dataset, PHenoVAlue)
   anova_results = anova(model_afterFIXED, type="marginal")$"p-value" < 0.05
+  # anova_results = anova.lm(model_afterFIXED, type="marginal")[p-value] < 0.05
   keepSex = anova_results[3]
   keepInteraction = anova_results[4]     
   if(!keepSex && !keepInteraction){
@@ -181,15 +182,15 @@ null_model_genotype <- function(dataset, PHenoVAlue){
 }
 #----------------------------------------------------------------------------------
 #Function 3-b: testing the fixed effects and building final Interaction effect null model
-null_model_Interaction<-function(dataset, PHenoVAlue){ 
-  model_afterFIXED=model_forFIXEDtest(dataset, PHenoVAlue)
+null_model_Interaction <- function(dataset, PHenoVAlue){ 
+  model_afterFIXED = model_forFIXEDtest(dataset, PHenoVAlue)
   anova_results = anova(model_afterFIXED, type="marginal")$"p-value" < 0.05
   keepSex = anova_results[3]
   keepGenotype = anova_results[2]     
   if(!keepSex && !keepGenotype){
     return(model.formula <- as.formula(paste(PHenoVAlue, "~", "1")))
   }else{
-    return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype","sex",sep="+"))))
+    return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype","sex",sep = "+"))))
   } 
 }
 # ------------------------------------------------------------------------------------------------
@@ -198,11 +199,12 @@ null_model_Interaction<-function(dataset, PHenoVAlue){
 # The model_formula_null and model_formula_genotype are called to define the models for comparison.
 # For each possible combination,  then an anova model is used to report the pvalue.
 # For testing the genotype effect we use method= ML
-testing_genotype_effect<-function(dataset,PHenoVAlue){
+testing_genotype_effect <- function(dataset,PHenoVAlue){
+  #call functions to determine model.formula
   model_formula_null = null_model_genotype(dataset,PHenoVAlue)
   model_formula_genotype = final_genotype_model(dataset,PHenoVAlue)
-  model_genotype=gls(model_formula_genotype,dataset,method='ML', na.action="na.omit")
-  model_null=gls(model_formula_null, dataset,method='ML',na.action="na.omit")
+  model_genotype = gls(model_formula_genotype,dataset,method = 'ML', na.action = "na.omit")
+  model_null= gls(model_formula_null, dataset, method = "ML", na.action = "na.omit")
   return(pvalue_genotype=(anova(model_genotype,model_null)$`p-value`[2]))
 }
 # ------------------------------------------------------------------------------------------------
@@ -214,29 +216,46 @@ testing_genotype_effect<-function(dataset,PHenoVAlue){
 testing_Interaction_effect<-function(dataset, PHenoVAlue){
   #call functions to determine model.formula
   formula_interaction_null = null_model_Interaction(dataset,PHenoVAlue)
-  model_interaction_full=gls(PHenoVAlue~genotype+sex+genotype*sex,dataset, method='ML',na.action="na.omit")
-  model_null_interaction =gls(formula_interaction_null, dataset,method='ML', na.action="na.omit")
-  return(pvalue_Stage2=(anova(model_interaction_full, model_null_interaction)$`p-value`[2]))
+  model_interaction_full = gls(PHenoVAlue~genotype+sex+genotype:sex,dataset, method = 'ML',na.action = "na.omit")
+  model_null_interaction = gls(formula_interaction_null, dataset,method = 'ML', na.action = "na.omit")
+  return(pvalue_Stage2 = (anova(model_interaction_full, model_null_interaction)$`p-value`[2]))
 }
+
 #Function 4-d: testing the sex effect
-null_model_sex<-function(dataset, PHenoVAlue){ 
-  model_afterFIXED=model_forFIXEDtest(dataset, PHenoVAlue)
-  anova_results = anova(model_afterFIXED, type="marginal")$"p-value" < 0.05
-  keepSex = anova_results[3]
+null_model_sex <- function(dataset, PHenoVAlue){ 
+  model_afterFIXED = model_forFIXEDtest(dataset, PHenoVAlue)
+  anova_results = anova(model_afterFIXED, type = "marginal")$"p-value" < 0.05
+  keepInteraction = anova_results[4]
   keepGenotype = anova_results[2]     
-  if(!keepSex && !keepGenotype){
+  if(!keepInteraction && !keepGenotype){
     return(model.formula <- as.formula(paste(PHenoVAlue, "~", "1")))
   }else{
     return(model.formula <- as.formula(paste(PHenoVAlue, "~", "genotype")))
   } 
 }
 # ------------------------------------------------------------------------------------------------
-testing_sex_effect<-function(dataset, PHenoVAlue){
+final_sex_model <- function(dataset, PHenoVAlue){
+  model_afterFIXED = model_forFIXEDtest(dataset, PHenoVAlue)
+  anova_results = anova(model_afterFIXED, type = "marginal")$"p-value" < 0.05
+  keepGenotype = anova_results[2]
+  keepInteraction = anova_results[4]
+  if( keepGenotype && keepInteraction){
+    return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", "genotype:sex", sep= "+"))))
+  }else if(keepGenotype &&  !keepInteraction){
+    return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", sep= "+"))))
+  }else if(!keepGenotype &&  !keepInteraction){
+    return(model.formula <- as.formula(paste(PHenoVAlue, "~", "sex" )))
+  }else if(!keepGenotype  && keepInteraction){
+    return(model.formula <- as.formula(paste(PHenoVAlue, "~", paste("genotype", "sex", "genotype:sex", sep= "+"))))
+  }
+}
+testing_sex_effect <- function(dataset, PHenoVAlue){
   #call functions to determine model.formula
-  formula_sex_null = null_model_sex(dataset,"PHenoVAlue")
-  model_sex_full=gls(PHenoVAlue~genotype+sex,dataset, method='ML',na.action="na.omit")
-  model_null_sex =gls(formula_sex_null, dataset,method='ML', na.action="na.omit")
-  return(pvalue_Stage1.5=(anova(model_sex_full, model_null_sex)$`p-value`[2]))
+  formula_sex_null = null_model_sex(dataset, PHenoVAlue)
+  formula_sex_full = final_sex_model(dataset,PHenoVAlue)
+  model_null_sex = gls(formula_sex_null, dataset,method = "ML", na.action = "na.omit")
+  model_full_sex = gls(formula_sex_full, dataset, method = "ML", na.action = "na.omit")
+  return(pvalue_Stage1.5 = (anova(model_full_sex, model_null_sex)$`p-value`[2]))
 }
 #-----------------------------------------------------------------------------------------
 #Function 5: following function returns the final model which is needed for the diagnostic plots 
@@ -246,12 +265,11 @@ testing_sex_effect<-function(dataset, PHenoVAlue){
 # For each possible combination,  then the model is fitted to the data and the model reported as the output.
 #this is a separate function to above as for the estimates of the fixed effects we use method=REML whilst for the genotype test we used method= ML   
 #na.action = na.exclude as in this form the residue calculated from the model output have the same length as the original datafile
-finalmodel<-function(dataset, PHenoVAlue){
+finalmodel <- function(dataset, PHenoVAlue){
   #call functions to determine model.formula
   model_formula_null = null_model_genotype(dataset,PHenoVAlue)
   model_genotype = final_genotype_model(dataset, PHenoVAlue)
-  
-  model_genotype=gls(model_genotype,dataset, na.action="na.exclude")
+  model_genotype = gls(model_genotype, dataset, na.action = "na.exclude")
 }
 # ---------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------
@@ -276,7 +294,6 @@ for(g in 2:length(unique_genes)){
   current_e = Phenotype_e_no_mising_new[, current_label]
   current_e = as.data.frame(current_e)
   current_p = Phenotype_p[Phenotype_p$label %in% current_label,]
-  
   numb_null[[current_gene]] = numb_gene[[current_gene]] = c()
   Normality_before[[current_gene]] = Normality_after[[current_gene]] = Normality_F[[current_gene]] = Normality_M[[current_gene]] = c()
   pvalue_Stage1[[current_gene]] = pvalue_Stage1.5[[current_gene]] = pvalue_Stage2[[current_gene]] = c()
@@ -314,7 +331,7 @@ for(g in 2:length(unique_genes)){
     }else{
       # if missing values < 70% do statistical analysis
       data_raw <- data.table(y =(c(current_e[i,],null_e[i,])), group = rep(c("Gene","Control"), c(ncol(current_e), ncol(null_e))), sex=c(current_p$Gender,null_p$Gender))
-      colnames(data_raw) = c("PHenoVAlue_raw","genotype",'sex')
+      colnames(data_raw) = c("PHenoVAlue_raw","genotype","sex")
       data_raw$PHenoVAlue_raw <-unlist(data_raw$PHenoVAlue_raw)
       # set as numeric 
       data_raw$PHenoVAlue_raw <- as.numeric(as.character(data_raw$PHenoVAlue_raw))
@@ -322,30 +339,30 @@ for(g in 2:length(unique_genes)){
       data_raw <- data_raw[!is.na(data_raw$PHenoVAlue_raw)]
       data_raw$PHenoVAlue <- rankNorm(data_raw$PHenoVAlue_raw)
       # check outliers
-      outliers_nullF_raw <- boxplot.stats(data_raw$PHenoVAlue[data_raw$sex%in%'Female' & data_raw$genotype %in% 'Control'])$out
+      outliers_nullF_raw <- boxplot.stats(data_raw$PHenoVAlue[data_raw$sex %in% "Female" & data_raw$genotype %in% "Control"])$out
       # remove outliers if necessary  
       if(length(outliers_nullF_raw) == 0){
         dataset2_raw <- data_raw
       }else{
-        dataset2_raw <- data_raw[-which((data_raw$PHenoVAlue %in% outliers_nullF_raw) & (data_raw$sex %in% 'Female') & (data_raw$genotype %in% 'Control')),]
+        dataset2_raw <- data_raw[-which((data_raw$PHenoVAlue %in% outliers_nullF_raw) & (data_raw$sex %in% "Female") & (data_raw$genotype %in% "Control")),]
       }
-      outliers_nullM_raw <- boxplot.stats(dataset2_raw$PHenoVAlue[dataset2_raw$sex %in% 'Male' & dataset2_raw$genotype %in% 'Control'])$out
+      outliers_nullM_raw <- boxplot.stats(dataset2_raw$PHenoVAlue[dataset2_raw$sex %in% "Male" & dataset2_raw$genotype %in% "Control"])$out
       if(length(outliers_nullM_raw) == 0){
         dataset3_raw <- dataset2_raw
       }else{
-        dataset3_raw<-dataset2_raw[-which((dataset2_raw$PHenoVAlue %in% outliers_nullM_raw) & (dataset2_raw$sex %in% 'Male') & (dataset2_raw$genotype %in% 'Control')),]
+        dataset3_raw<-dataset2_raw[-which((dataset2_raw$PHenoVAlue %in% outliers_nullM_raw) & (dataset2_raw$sex %in% "Male") & (dataset2_raw$genotype %in% "Control")),]
       }
-      outliers_genoF_raw <- boxplot.stats(dataset3_raw$PHenoVAlue[dataset3_raw$sex %in% 'Female' & dataset3_raw$genotype %in% 'Gene'])$out
+      outliers_genoF_raw <- boxplot.stats(dataset3_raw$PHenoVAlue[dataset3_raw$sex %in% "Female" & dataset3_raw$genotype %in% "Gene"])$out
       if(length(outliers_genoF_raw) == 0){
         dataset4_raw <- dataset3_raw
       }else{
-        dataset4_raw <- dataset3_raw[-which((dataset3_raw$PHenoVAlue %in% outliers_genoF_raw) & (dataset3_raw$sex %in% 'Female') & (dataset3_raw$genotype %in% 'Gene')),]
+        dataset4_raw <- dataset3_raw[-which((dataset3_raw$PHenoVAlue %in% outliers_genoF_raw) & (dataset3_raw$sex %in% "Female") & (dataset3_raw$genotype %in% "Gene")),]
       }
-      outliers_genoM_raw <- boxplot.stats(dataset4_raw$PHenoVAlue[dataset4_raw$sex %in% 'Male' & dataset4_raw$genotype %in% 'Control'])$out
+      outliers_genoM_raw <- boxplot.stats(dataset4_raw$PHenoVAlue[dataset4_raw$sex %in% "Male" & dataset4_raw$genotype %in% "Control"])$out
       if(length(outliers_genoM_raw) == 0){
         dataset_raw <- dataset4_raw
       }else{
-        dataset_raw <-dataset4_raw[-which((dataset4_raw$PHenoVAlue %in% outliers_genoM_raw) & (dataset4_raw$sex %in% 'Male') & (dataset4_raw$genotype %in% 'Control')),]
+        dataset_raw <-dataset4_raw[-which((dataset4_raw$PHenoVAlue %in% outliers_genoM_raw) & (dataset4_raw$sex %in% "Male") & (dataset4_raw$genotype %in% "Control")),]
       }
       # remove missing values
       dataset <- dataset_raw[!is.na(dataset_raw$PHenoVAlue),]
@@ -357,11 +374,11 @@ for(g in 2:length(unique_genes)){
       })
       if(length(model_afterFIXED)<=1){
         #count number for WT mice and KO mice
-        numb_null[[current_gene]][i]= sum(dataset$genotype%in%"Control")
-        numb_gene[[current_gene]][i]= sum(dataset$genotype%in%"Gene")
-        Normality_before[[current_gene]][i] =NA
-        Normality_after[[current_gene]][i] =NA
-        Normality_F[[current_gene]][i] =NA
+        numb_null[[current_gene]][i] = sum(dataset$genotype %in% "Control")
+        numb_gene[[current_gene]][i] = sum(dataset$genotype %in% "Gene")
+        Normality_before[[current_gene]][i] = NA
+        Normality_after[[current_gene]][i] = NA
+        Normality_F[[current_gene]][i] = NA
         Normality_M[[current_gene]][i] =NA
         #p-values not availabel, NA
         pvalue_Stage1[[current_gene]][i] = NA
@@ -372,26 +389,25 @@ for(g in 2:length(unique_genes)){
         sep_allKO_pval[[current_gene]][i] = sep_allKO_estimate[[current_gene]][i] = NA
         sep_FvKO_pval[[current_gene]][i] = sep_FvKO_estimate[[current_gene]][i] =NA
         sep_MvKO_pval[[current_gene]][i] = sep_MvKO_estimate [[current_gene]][i]=NA
-        
         #calculate fold-change using WT mice as reference
-        foldchange_all[[current_gene]][i]=mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Gene"],na.rm = T)/mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Control"],na.rm = T) 
+        foldchange_all[[current_gene]][i]=mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Gene"], na.rm = T)/mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Control"],na.rm = T) 
         #calculate fold-change in female mice using WT mice as reference
-        foldchange_FvKO[[current_gene]][i]= mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Gene"&dataset$sex%in%"Female"],na.rm = T)/ mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Control"&dataset$sex%in%"Female"],na.rm = T)
+        foldchange_FvKO[[current_gene]][i]= mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Gene" & dataset$sex %in% "Female"], na.rm = T)/ mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Control" & dataset$sex %in% "Female"], na.rm = T)
         #calculate fold-change in male mice using WT mice as reference
-        foldchange_MvKO[[current_gene]][i]= mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Gene"&dataset$sex%in%"Male"],na.rm = T)/ mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Control"&dataset$sex%in%"Male"],na.rm = T)
+        foldchange_MvKO[[current_gene]][i] = mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Gene" & dataset$sex %in% "Male"], na.rm = T)/ mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Control" & dataset$sex %in% "Male"], na.rm = T)
       }else{
         # subset data by sex
         u_F <- unique(dataset$PHenoVAlue[dataset$sex %in% "Female"])
         u_M <- unique(dataset$PHenoVAlue[dataset$sex %in% "Male"])
-        if(length(u_F)==1 &length(u_M)==1){
+        if(length(u_F) == 1 & length(u_M) == 1){
           Normality_before[[current_gene]][i] = NA
           Normality_after[[current_gene]][i] = NA
           Normality_F[[current_gene]][i] = NA
           Normality_M[[current_gene]][i]= NA
           # count number for WT mice and KO mice
-          numb_null[[current_gene]][i]= sum(dataset$genotype %in%"Control")
-          numb_gene[[current_gene]][i]= sum(dataset$genotype %in%"Gene")  
-        }else if(length(u_F)>1&length(u_M)==1) {
+          numb_null[[current_gene]][i]= sum(dataset$genotype %in% "Control")
+          numb_gene[[current_gene]][i]= sum(dataset$genotype %in% "Gene")  
+        }else if(length(u_F) > 1 & length(u_M) == 1) {
           # test normality before data transformation and after data transformation 
           Normality_before[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue_raw)$p.value
           Normality_after[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue)$p.value
@@ -399,47 +415,46 @@ for(g in 2:length(unique_genes)){
           Normality_F[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue[dataset$sex%in%"Female"] )$p.value
           Normality_M[[current_gene]][i]= NA
           # count the number of WT and KO mice
-          numb_null[[current_gene]][i]= sum(dataset$genotype %in%"Control")
-          numb_gene[[current_gene]][i]= sum(dataset$genotype %in%"Gene")   
-        }else if(length(u_F)==1&length(u_M)>1) {
+          numb_null[[current_gene]][i]= sum(dataset$genotype %in% "Control")
+          numb_gene[[current_gene]][i]= sum(dataset$genotype %in% "Gene")   
+        }else if(length(u_F) == 1 & length(u_M) > 1) {
           # test normality before data transformation and after data transformation 
           Normality_before[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue_raw)$p.value
           Normality_after[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue)$p.value
           # test normality for male and female mice
           Normality_F[[current_gene]][i] = NA
-          Normality_M[[current_gene]][i]= shapiro.test(dataset$PHenoVAlue[dataset$sex%in%"Male"] )$p.value
+          Normality_M[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue[dataset$sex %in% "Male"] )$p.value
           # count the number of WT and KO mice
-          numb_null[[current_gene]][i]= sum(dataset$genotype %in%"Control")
-          numb_gene[[current_gene]][i]= sum(dataset$genotype %in%"Gene")   
-        }else if(length(u_F)>1&length(u_M)>1) {
+          numb_null[[current_gene]][i] = sum(dataset$genotype %in% "Control")
+          numb_gene[[current_gene]][i] = sum(dataset$genotype %in% "Gene")   
+        }else if(length(u_F) > 1 & length(u_M) > 1) {
           # test normality before data transformation and after data transformation
           Normality_before[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue_raw)$p.value
           Normality_after[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue)$p.value
           # test normality for male and female mice
-          Normality_F[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue[dataset$sex%in%"Female"] )$p.value
-          Normality_M[[current_gene]][i]= shapiro.test(dataset$PHenoVAlue[dataset$sex%in%"Male"] )$p.value
+          Normality_F[[current_gene]][i] = shapiro.test(dataset$PHenoVAlue[dataset$sex %in% "Female"] )$p.value
+          Normality_M[[current_gene]][i]= shapiro.test(dataset$PHenoVAlue[dataset$sex %in% "Male"] )$p.value
           # count the number of WT and KO mice
-          numb_null[[current_gene]][i]= sum(dataset$genotype %in%"Control")
-          numb_gene[[current_gene]][i]= sum(dataset$genotype %in%"Gene")   
+          numb_null[[current_gene]][i]= sum(dataset$genotype %in% "Control")
+          numb_gene[[current_gene]][i]= sum(dataset$genotype %in% "Gene")   
         }
-        
       # load null model and full model
-      model_formula_null=null_model_genotype(dataset,"PHenoVAlue")
-      model_formula_genotype=final_genotype_model(dataset, "PHenoVAlue")
+      model_formula_null = null_model_genotype(dataset,"PHenoVAlue")
+      model_formula_genotype = final_genotype_model(dataset, "PHenoVAlue")
       #test genotype effect
       geno_effect= testing_genotype_effect(dataset,"PHenoVAlue")
       #test hgenotye*sex interaction effect
-      formula_interaction_null=null_model_Interaction(dataset,"PHenoVAlue")
-      Interct_effect= testing_Interaction_effect(dataset,"PHenoVAlue")
+      formula_interaction_null = null_model_Interaction(dataset,"PHenoVAlue")
+      Interct_effect = testing_Interaction_effect(dataset, "PHenoVAlue")
       #test sex effect
       formula_sex_null = null_model_sex(dataset,"PHenoVAlue")
       sex_effect= testing_sex_effect(dataset,"PHenoVAlue")
       #p-values using gls model
       result<-gls(PHenoVAlue ~ genotype + sex + genotype*sex, data = dataset,na.action = 'na.exclude')
       summary<-nlme:::summary.gls(model_afterFIXED)$tTable
-        pvalue_Stage1[[current_gene]][i]=geno_effect
-        pvalue_Stage1.5[[current_gene]][i]=sex_effect
-        pvalue_Stage2[[current_gene]][i]=Interct_effect
+        pvalue_Stage1[[current_gene]][i] = geno_effect
+        pvalue_Stage1.5[[current_gene]][i] = sex_effect
+        pvalue_Stage2[[current_gene]][i] = Interct_effect
         #subset data for WT mice
         ctrl_data = dataset[dataset$genotype%in%"Control"]
         # test sex difference in WT mice using gls() model
@@ -448,99 +463,97 @@ for(g in 2:length(unique_genes)){
         }, error = function(er){
           NA
         }) 
-        if(length(ctrl_test)<=1){
-          KO_sex_pval[[current_gene]][i]<- NA
-          KO_sex_estimate[[current_gene]][i]<- NA
+        if(length(ctrl_test) <= 1){
+          KO_sex_pval[[current_gene]][i] <- NA
+          KO_sex_estimate[[current_gene]][i] <- NA
         }else{
-          ctrl_result<-nlme:::summary.gls(ctrl_test)$tTable 
-          ctrl_sex_pval[[current_gene]][i]<- ctrl_result[2,4]
-          ctrl_sex_estimate[[current_gene]][i]<- ctrl_result[2,1]
+          ctrl_result <- nlme:::summary.gls(ctrl_test)$tTable 
+          ctrl_sex_pval[[current_gene]][i] <- ctrl_result[2,4]
+          ctrl_sex_estimate[[current_gene]][i] <- ctrl_result[2,1]
         }
         #subset data for KO mice
         KO_data = dataset[dataset$genotype%in%"Gene"]
         # test sex difference in WT mice using gls() model
-        KO_test<- tryCatch({
-          gls(PHenoVAlue~sex,data = KO_data,na.action = 'na.exclude')
+        KO_test <- tryCatch({
+          gls(PHenoVAlue~sex,data = KO_data,na.action = "na.exclude")
         }, error = function(er){
           NA
         }) 
-        if(length(KO_test)<=1){
-          KO_sex_pval[[current_gene]][i]<- NA
-          KO_sex_estimate[[current_gene]][i]<- NA
+        if(length(KO_test) <= 1){
+          KO_sex_pval[[current_gene]][i] <- NA
+          KO_sex_estimate[[current_gene]][i] <- NA
         }else{
           KO_result<-nlme:::summary.gls(KO_test)$tTable 
-          KO_sex_pval[[current_gene]][i]<- KO_result[2,4]
-          KO_sex_estimate[[current_gene]][i]<- KO_result[2,1]
+          KO_sex_pval[[current_gene]][i] <- KO_result[2,4]
+          KO_sex_estimate[[current_gene]][i] <- KO_result[2,1]
         }
-        
         # test genotyp effect without separating groups by sex
         result_all<- tryCatch({
-          gls(PHenoVAlue~genotype,data = dataset,na.action = 'na.exclude')
+          gls(PHenoVAlue~genotype,data = dataset,na.action = "na.exclude")
         }, error = function(er){
           NA
         }) 
-        if(length(result_all)<=1){
-          sep_allKO_pval[[current_gene]][i]<- NA
-          sep_allKO_estimate[[current_gene]][i]<- NA
+        if(length(result_all) <= 1){
+          sep_allKO_pval[[current_gene]][i] <- NA
+          sep_allKO_estimate[[current_gene]][i] <- NA
         }else{
-          sep_all<-nlme:::summary.gls(result_all)$tTable 
+          sep_all <- nlme:::summary.gls(result_all)$tTable 
           sep_allKO_pval[[current_gene]][i] <- sep_all[2,4]
-          sep_allKO_estimate[[current_gene]][i]<- sep_all[2,1]
+          sep_allKO_estimate[[current_gene]][i] <- sep_all[2,1]
         }
         
         #subset data by sex and individual comparison of genotype effect within sex
-        sub_F<- dataset[dataset$sex%in%"Female",]
-        sub_M<-dataset[dataset$sex%in%"Male",]
+        sub_F <- dataset[dataset$sex %in% "Female",]
+        sub_M <- dataset[dataset$sex %in% "Male",]
         #genotype as variable in female mice
-        result_F<-tryCatch({
-          gls(PHenoVAlue~genotype,data = sub_F,na.action = 'na.exclude')
+        result_F <- tryCatch({
+          gls(PHenoVAlue ~ genotype,data = sub_F, na.action = "na.exclude")
         }, error = function(er){
           NA
         })
-        if(length(result_F)<=1){
-          sep_FvKO_pval[[current_gene]][i]<- NA
-          sep_FvKO_estimate[[current_gene]][i]<- NA
+        if(length(result_F) <= 1){
+          sep_FvKO_pval[[current_gene]][i] <- NA
+          sep_FvKO_estimate[[current_gene]][i] <- NA
         }else{
-          sep_FvKO<-nlme:::summary.gls(result_F)$tTable 
-          sep_FvKO_pval[[current_gene]][i]<- sep_FvKO[2,4]
-          sep_FvKO_estimate[[current_gene]][i]<- sep_FvKO[2,1]
+          sep_FvKO <- nlme:::summary.gls(result_F)$tTable 
+          sep_FvKO_pval[[current_gene]][i] <- sep_FvKO[2,4]
+          sep_FvKO_estimate[[current_gene]][i] <- sep_FvKO[2,1]
         }
         # genotype as variable in male mice
-        result_M<- tryCatch({
-          gls(PHenoVAlue~genotype,data = sub_M,na.action = 'na.exclude')
+        result_M <- tryCatch({
+          gls(PHenoVAlue ~ genotype, data = sub_M, na.action = "na.exclude")
         }, error = function(er){
           NA
         }) 
-        if(length(result_M)<=1){
-          sep_MvKO_pval[[current_gene]][i]<- NA
-          sep_MvKO_estimate[[current_gene]][i]<- NA
+        if(length(result_M) <= 1){
+          sep_MvKO_pval[[current_gene]][i] <- NA
+          sep_MvKO_estimate[[current_gene]][i] <- NA
         }else{
-          sep_MvKO<-nlme:::summary.gls(result_M)$tTable 
-          sep_MvKO_pval[[current_gene]][i]<- sep_MvKO[2,4]
+          sep_MvKO <- nlme:::summary.gls(result_M)$tTable 
+          sep_MvKO_pval[[current_gene]][i] <- sep_MvKO[2,4]
           sep_MvKO_estimate[[current_gene]][i]<- sep_MvKO[2,1]
         }
         # fold-change calculation using WT mice reference
-        foldchange_all[[current_gene]][i]=mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Gene"],na.rm = T)/mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Control"],na.rm = T) 
+        foldchange_all[[current_gene]][i] = mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Gene"], na.rm = T)/mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Control"],na.rm = T) 
         # fold-change calculation for female KO mice to female WT mice
-        foldchange_FvKO[[current_gene]][i]= mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Gene"&dataset$sex%in%"Female"],na.rm = T)/ mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Control"&dataset$sex%in%"Female"],na.rm = T)
+        foldchange_FvKO[[current_gene]][i] = mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Gene" & dataset$sex %in% "Female"], na.rm = T)/ mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Control"& dataset$sex%in%"Female"], na.rm = T)
         # fold-change calculation for male KO mice to male WT mice
-        foldchange_MvKO[[current_gene]][i]= mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Gene"&dataset$sex%in%"Male"],na.rm = T)/ mean(dataset$PHenoVAlue_raw[dataset$genotype%in%"Control"&dataset$sex%in%"Male"],na.rm = T)
+        foldchange_MvKO[[current_gene]][i] = mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Gene" & dataset$sex %in% "Male"], na.rm = T)/ mean(dataset$PHenoVAlue_raw[dataset$genotype %in% "Control" & dataset$sex %in% "Male"], na.rm = T)
               }
              }
         }
   ### adjustment method using ("BH" or its alias "fdr")
-  fdr_Stage1[[current_gene]] = p.adjust(pvalue_Stage1[[current_gene]],'fdr')
-  fdr_Stage1.5[[current_gene]] = p.adjust(pvalue_Stage1.5[[current_gene]],'fdr')
-  fdr_Stage2[[current_gene]] = p.adjust(pvalue_Stage2[[current_gene]],'fdr')
-  fdr_ctrl_sex[[current_gene]] = p.adjust(ctrl_sex_pval[[current_gene]],'fdr')
-  fdr_KO_sex[[current_gene]] = p.adjust(KO_sex_pval[[current_gene]],'fdr')
+  fdr_Stage1[[current_gene]] = p.adjust(pvalue_Stage1[[current_gene]],"fdr")
+  fdr_Stage1.5[[current_gene]] = p.adjust(pvalue_Stage1.5[[current_gene]],"fdr")
+  fdr_Stage2[[current_gene]] = p.adjust(pvalue_Stage2[[current_gene]],"fdr")
+  fdr_ctrl_sex[[current_gene]] = p.adjust(ctrl_sex_pval[[current_gene]],"fdr")
+  fdr_KO_sex[[current_gene]] = p.adjust(KO_sex_pval[[current_gene]],"fdr")
   }
 
 # calculate significance ratio in each stage
-sapply(pvalue_Stage1,function(x){sum(x<0.05,na.rm = TRUE)})
-sapply(fdr_Stage1,function(x){sum(x<0.05,na.rm = TRUE)})
-sapply(fdr_Stage2,function(x){sum(x<0.05,na.rm = TRUE)})
-
+sapply(pvalue_Stage1, function(x){sum(x < 0.05, na.rm = TRUE)})
+sapply(fdr_Stage1, function(x){sum(x < 0.05, na.rm = TRUE)})
+sapply(fdr_Stage2, function(x){sum(x < 0.05, na.rm = TRUE)})
 #Output result
 setwd("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 for(i in 1:length(names(pvalue_Stage1))){
