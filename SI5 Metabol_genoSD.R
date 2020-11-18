@@ -11,7 +11,7 @@ library(RNOmni)
 # Function 1: build model for testing fixed effects
 # Assumption: assume no batch effect and weight is not a independet variance 
 model_forFIXEDtest<-function(dataset, Intensity){
-  model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", "genotype*sex", sep= "+")))
+  model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", "genotype:sex", sep= "+")))
   model=gls(model.formula, dataset, na.action="na.omit")
 }
 # -------------------------------------------------------------------------------------------------------------------------------
@@ -27,13 +27,13 @@ final_genotype_model<-function(dataset, Intensity){
   keepSex = anova_results[3]
   keepInteraction = anova_results[4]
   if(keepSex && keepInteraction){
-    return(model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", "genotype*sex", sep= "+"))))
+    return(model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", "genotype:sex", sep= "+"))))
   }else if(keepSex &&  !keepInteraction){
     return(model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", sep= "+"))))
   }else if(!keepSex &&  !keepInteraction){
     return(model.formula <- as.formula(paste(Intensity, "~", "genotype")))
   }else if(!keepSex  && keepInteraction){
-    return(model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", "genotype*sex", sep= "+"))))
+    return(model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", "genotype:sex", sep= "+"))))
   }
 }
 #---------------------------------------------------------------------------------------------------------------------------
@@ -81,6 +81,7 @@ testing_genotype_effect<-function(dataset,Intensity){
   model_null=gls(model_formula_null, dataset,method='ML',na.action="na.omit")
   return(pvalue_genotype=(anova(model_genotype,model_null)$`p-value`[2]))
 }
+
 # ------------------------------------------------------------------------------------------------
 #Function 4-b: testing the interaction effect
 # The goal of the function is to give a pvalue of whether genotype effect is significant by compare the genotype model with the null model with the anova function
@@ -90,9 +91,48 @@ testing_genotype_effect<-function(dataset,Intensity){
 testing_Interaction_effect<-function(dataset, Intensity){
   #call functions to determine model.formula
   formula_interaction_null = null_model_Interaction(dataset,Intensity)
-  model_interaction_full=gls(Intensity~genotype+sex+genotype*sex,dataset, method='ML',na.action="na.omit")
+  model_interaction_full=gls(Intensity~genotype+sex+genotype:sex,dataset, method='ML',na.action="na.omit")
   model_null_interaction =gls(formula_interaction_null, dataset,method='ML', na.action="na.omit")
   return(pvalue_Stage2=(anova(model_interaction_full, model_null_interaction)$`p-value`[2]))
+}
+
+# ------------------------------------------------------------------------------------------------
+#Function 4-d: testing the sex effect
+null_model_sex<-function(dataset, Intensity){ 
+  model_afterFIXED=model_forFIXEDtest(dataset, Intensity)
+  anova_results = anova(model_afterFIXED, type="marginal")$"p-value" < 0.05
+  keepInteraction = anova_results[4]
+  keepGenotype = anova_results[2]     
+  if(!keepInteraction && !keepGenotype){
+    return(model.formula <- as.formula(paste(Intensity, "~", "1")))
+  }else{
+    return(model.formula <- as.formula(paste(Intensity, "~", "genotype")))
+  } 
+}
+# ------------------------------------------------------------------------------------------------
+final_sex_model<-function(dataset, Intensity){
+  model_afterFIXED=model_forFIXEDtest(dataset, Intensity)
+  anova_results = anova(model_afterFIXED, type="marginal")$"p-value" < 0.05
+  keepGenotype = anova_results[2]
+  keepInteraction = anova_results[4]
+  if( keepGenotype && keepInteraction){
+    return(model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", "genotype:sex", sep= "+"))))
+  }else if(keepGenotype &&  !keepInteraction){
+    return(model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", sep= "+"))))
+  }else if(!keepGenotype &&  !keepInteraction){
+    return(model.formula <- as.formula(paste(Intensity, "~", "sex" )))
+  }else if(!keepGenotype  && keepInteraction){
+    return(model.formula <- as.formula(paste(Intensity, "~", paste("genotype", "sex", "genotype:sex", sep= "+"))))
+  }
+}
+
+testing_sex_effect<-function(dataset, Intensity){
+  #call functions to determine model.formula
+  formula_sex_null = null_model_sex(dataset, Intensity)
+  formula_sex_full = final_sex_model(dataset,Intensity)
+  model_null_sex =gls(formula_sex_null, dataset,method='ML', na.action="na.omit")
+  model_full_sex=gls(formula_sex_full, dataset, method='ML',na.action="na.omit")
+  return(pvalue_Stage1.5=(anova(model_full_sex, model_null_sex)$`p-value`[2]))
 }
 # ---------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------
@@ -184,18 +224,131 @@ for(g in 1:length(unique_genes)){
   All_Metabolomics_e_no_mising[,current_label_M] = current_e_M
 }
 
+# ---------------------------------------------------------
+# Testing and deal with missing values
+for(i in 1: nrow(All_Metabolomics_e_no_mising)){
+  All_Metabolomics_f$CompoundName[i]
+  # ---------------------------------------------------------
+  # FEMALE
+  outliers_F_raw_null <- boxplot.stats(All_Metabolomics_e_no_mising[i, All_Metabolomics_p$Gender %in% "Female" & All_Metabolomics_p$Genotype %in% "null"])$out
+  outliers_F_label_null <- All_Metabolomics_p$label[which(All_Metabolomics_p$Gender == "Female" & All_Metabolomics_p$Genotype %in% "null" & All_Metabolomics_e_no_mising[i,] %in% outliers_F_raw_null)]
+  outliers_F_genotype_null <- All_Metabolomics_p$Genotype[which(All_Metabolomics_p$Gender == "Female" & All_Metabolomics_p$Genotype %in% "null" & All_Metabolomics_e_no_mising[i,] %in% outliers_F_raw_null)]
+  if (length(outliers_F_raw_null) == 0){
+    All_Metabolomics_e_no_mising[i,All_Metabolomics_p$Gender %in% "Female"  & All_Metabolomics_p$Genotype %in% "null"] <- All_Metabolomics_e_no_mising[i,All_Metabolomics_p$Gender %in% "Female" & All_Metabolomics_p$Genotype %in% "null"]
+  }else{
+    if(length(outliers_F_raw_null) > (sum(!is.na(All_Metabolomics_e_no_mising[i, All_Metabolomics_p$Gender %in% "Female" & All_Metabolomics_p$Genotype %in% "null"])) /6)){
+      outliers_F_raw_null <- NA
+      outliers_F_genotype_null <- NA
+    }else{
+      outliers_F_raw_null <- outliers_F_raw_null
+      outliers_F_label_null <- outliers_F_label_null
+      outliers_F_genotype_null <- outliers_F_genotype_null
+    }
+    All_Metabolomics_e_no_mising[i, All_Metabolomics_p$label %in% outliers_F_label_null] <- NA
+  }
+  outliers_F_raw_KO <- boxplot.stats(All_Metabolomics_e_no_mising[i, All_Metabolomics_p$Gender %in% "Female"])$out
+  outliers_F_label_KO <- All_Metabolomics_p$label[which(All_Metabolomics_p$Gender == "Female" & All_Metabolomics_e_no_mising[i,] %in% outliers_F_raw_KO)]
+  outliers_F_genotype_KO <- All_Metabolomics_p$Genotype[which(All_Metabolomics_p$label %in% outliers_F_label_KO)]
+  ref_F_gene <- unique(outliers_F_genotype_KO)
+  if(length(outliers_F_raw_KO) == 0){
+    All_Metabolomics_e_no_mising[i,All_Metabolomics_p$Gender %in% "Female"] <- All_Metabolomics_e_no_mising[i,All_Metabolomics_p$Gender %in% "Female"]
+  }else{
+    for (l in 1: length(ref_F_gene)){
+      if (ref_F_gene[l] == "null"){
+        null_kp_F_lable <- which(outliers_F_genotype_KO == "null")
+        outliers_F_raw_KO <- outliers_F_raw_KO[-null_kp_F_lable]
+        outliers_F_genotype_KO <- outliers_F_genotype_KO[-null_kp_F_lable]
+        outliers_F_label_KO <- outliers_F_label_KO[-null_kp_F_lable]
+      }else{
+        if(sum(outliers_F_genotype_KO %in% ref_F_gene[l]) > 1 ){
+          outliers_F_label_kp <- outliers_F_label_KO[outliers_F_genotype_KO %in% ref_F_gene[l]]
+          outliers_F_label_ad <- All_Metabolomics_p$label[All_Metabolomics_p$Gender == "Female" & All_Metabolomics_p$Genotype %in% ref_F_gene[l] & (!All_Metabolomics_p$label %in% outliers_F_label_kp)]
+          outliers_F_Intensity_ad <- All_Metabolomics_e_no_mising[i,All_Metabolomics_p$label %in% outliers_F_label_ad]
+          KO_F_kp <- which(outliers_F_genotype_KO %in% ref_F_gene[l])
+          outliers_F_raw_KO <- outliers_F_raw_KO[-KO_F_kp]
+          outliers_F_raw_KO <- c(outliers_F_Intensity_ad, outliers_F_raw_KO)
+          outliers_F_genotype_KO <- outliers_F_genotype_KO[-KO_F_kp]
+          outliers_F_genotype_KO <- c(ref_F_gene[l], outliers_F_genotype_KO)
+          outliers_F_label_KO <- outliers_F_label_KO[-KO_F_kp]
+          outliers_F_label_KO <- c(outliers_F_label_ad ,outliers_F_label_KO)
+        }else{
+          outliers_F_raw_KO <- outliers_F_raw_KO
+          outliers_F_genotype_KO <- outliers_F_genotype_KO
+          outliers_F_label_KO <- outliers_F_label_KO
+        }
+      }
+    }
+    All_Metabolomics_e_no_mising[i, which(All_Metabolomics_p$label %in% outliers_F_label_KO) ] <- NA
+  }
+  # ---------------------------------------------------------------------------------------------------
+  # MALE
+  outliers_M_raw_null <- boxplot.stats(All_Metabolomics_e_no_mising[i, All_Metabolomics_p$Gender %in% "Male" & All_Metabolomics_p$Genotype %in% "null"])$out
+  outliers_M_label_null <- All_Metabolomics_p$label[which(All_Metabolomics_p$Gender == "Male" & All_Metabolomics_p$Genotype %in% "null" & All_Metabolomics_e_no_mising[i,] %in% outliers_M_raw_null)]
+  outliers_M_genotype_null <- All_Metabolomics_p$Genotype[which(All_Metabolomics_p$Gender == "Male" & All_Metabolomics_p$Genotype %in% "null" & All_Metabolomics_e_no_mising[i,] %in% outliers_M_raw_null)]
+  
+  if (length(outliers_M_raw_null) == 0){
+    All_Metabolomics_e_no_mising[i,All_Metabolomics_p$Gender %in% "Male" & All_Metabolomics_p$Genotype %in% "null"] <- All_Metabolomics_e_no_mising[i,All_Metabolomics_p$Gender %in% "Male" & All_Metabolomics_p$Genotype %in% "null"]
+  }else{
+    if(length(outliers_M_raw_null) > (sum(!is.na(All_Metabolomics_e_no_mising[i, All_Metabolomics_p$Gender %in% "Male" & All_Metabolomics_p$Genotype %in% "null"])) /6)){
+      outliers_M_raw_null <- NA
+      outliers_M_genotype_null <- NA
+      outliers_M_genotype_null <- NA
+    }else{
+      outliers_M_raw_null <- outliers_M_raw_null
+      outliers_M_label_null <- outliers_M_label_null
+      outliers_M_genotype_null <- outliers_M_genotype_null
+    }
+    All_Metabolomics_e_no_mising[i, All_Metabolomics_p$label %in% outliers_M_label_null] <- NA
+  }
+  # ------------------------------------------------------------------
+  outliers_M_raw_KO <- boxplot.stats(All_Metabolomics_e_no_mising[i, All_Metabolomics_p$Gender %in% "Male"])$out
+  outliers_M_label_KO <- All_Metabolomics_p$label[which(All_Metabolomics_p$Gender == "Male" & All_Metabolomics_e_no_mising[i,] %in% outliers_M_raw_KO)]
+  outliers_M_genotype_KO <- All_Metabolomics_p$Genotype[which(All_Metabolomics_p$label %in% outliers_M_label_KO)]
+  ref_M_gene <- unique(outliers_M_genotype_KO)
+  if(length(outliers_M_raw_KO)==0){
+    All_Metabolomics_e_no_mising[i, All_Metabolomics_p$Gender %in% "Male"] <- All_Metabolomics_e_no_mising[i, All_Metabolomics_p$Gender %in% "Male"]
+  }else{
+    for (m in 1: length(ref_M_gene)){
+      if (ref_M_gene[m] == "null"){
+        null_kp_M_lable <- which(outliers_M_genotype_KO == "null")
+        outliers_M_raw_KO <- outliers_M_raw_KO[-null_kp_M_lable]
+        outliers_M_genotype_KO <- outliers_M_genotype_KO[-null_kp_M_lable]
+        outliers_M_label_KO <- outliers_M_label_KO[-null_kp_M_lable]
+      }else{
+        if(sum(outliers_M_genotype_KO %in% ref_M_gene[m]) > 1 ){
+          outliers_M_label_kp <- outliers_M_label_KO[outliers_M_genotype_KO %in% ref_M_gene[m]]
+          outliers_M_label_ad <- All_Metabolomics_p$label[All_Metabolomics_p$Gender == "Male" & All_Metabolomics_p$Genotype %in% ref_M_gene[m] & (!All_Metabolomics_p$label %in% outliers_M_label_kp)]
+          outliers_M_Intensity_ad <- All_Metabolomics_e_no_mising[i,All_Metabolomics_p$label %in% outliers_M_label_ad]
+          KO_M_kp <- which(outliers_M_genotype_KO %in% ref_M_gene[m])
+          outliers_M_raw_KO <- outliers_M_raw_KO[-KO_M_kp]
+          outliers_M_raw_KO <- c(outliers_M_Intensity_ad, outliers_M_raw_KO)
+          outliers_M_genotype_KO <- outliers_M_genotype_KO[-KO_M_kp]
+          outliers_M_genotype_KO <- c(ref_M_gene[m], outliers_M_genotype_KO)
+          outliers_M_label_KO <- outliers_M_label_KO[-KO_M_kp]
+          outliers_M_label_KO <- c(outliers_M_label_ad ,outliers_M_label_KO)
+        }else{
+          outliers_M_raw_KO <- outliers_M_raw_KO
+          outliers_M_genotype_KO <- outliers_M_genotype_KO
+          outliers_M_label_KO <- outliers_M_label_KO
+        }
+      }
+    }
+    All_Metabolomics_e_no_mising[i, which(All_Metabolomics_p$label %in% outliers_M_label_KO) ] <- NA
+  }
+}
+
 #subset data by sex for wildtype mice
-null_label = All_Metabolomics_p$label[All_Metabolomics_p$Genotype %in% c('null')]
+null_label = All_Metabolomics_p$label[All_Metabolomics_p$Genotype %in% c("null")]
 null_e = All_Metabolomics_e_no_mising[, null_label]
-null_label = All_Metabolomics_p$label[All_Metabolomics_p$Genotype %in% c('null') & All_Metabolomics_p$Gender %in% "Female"]
+null_label = All_Metabolomics_p$label[All_Metabolomics_p$Genotype %in% c("null") & All_Metabolomics_p$Gender %in% "Female"]
 null_e_female = All_Metabolomics_e_no_mising[, null_label]
-null_label = All_Metabolomics_p$label[All_Metabolomics_p$Genotype %in% c('null') & All_Metabolomics_p$Gender %in% "Male"]
+null_label = All_Metabolomics_p$label[All_Metabolomics_p$Genotype %in% c("null") & All_Metabolomics_p$Gender %in% "Male"]
 null_e_male = All_Metabolomics_e_no_mising[, null_label]
 # ------------------------------------------------------------------------------------------------------------------------------------------
 # Starting TwoStage significance assessment using Two-way ANOVA
 Normality_before = Normality_F = Normality_M = list()
 numb_null = numb_gene = list()
-pvalue_Stage1 = pvalue_Stage2 = list()
+pvalue_Stage1 = pvalue_Stage1b = pvalue_Stage2 = list()
 sep_allKO_pval = sep_allKO_estimate =list()
 sep_FvKO_pval = sep_FvKO_estimate = sep_MvKO_pval = sep_MvKO_estimate = list()
 foldchange_FvKO = foldchange_MvKO = list()
@@ -213,7 +366,7 @@ for(g in 2:length(unique_genes)){
   # null_p <- All_Metabolomics_p[All_Metabolomics_p$Genotype %in% 'null', ]
   Normality_before[[current_gene]] = Normality_F[[current_gene]] = Normality_M[[current_gene]] = c()
   numb_null[[current_gene]] = numb_gene[[current_gene]] = c()
-  pvalue_Stage1[[current_gene]] = pvalue_Stage2[[current_gene]] = c()
+  pvalue_Stage1[[current_gene]] = pvalue_Stage1b[[current_gene]] = pvalue_Stage2[[current_gene]] = c()
   sep_allKO_pval[[current_gene]] = sep_allKO_estimate[[current_gene]] = c() 
   sep_FvKO_pval[[current_gene]] = sep_FvKO_estimate[[current_gene]] = sep_MvKO_pval[[current_gene]] = sep_MvKO_estimate[[current_gene]] = c()
   foldchange_FvKO[[current_gene]] = foldchange_MvKO[[current_gene]] = c()
@@ -229,6 +382,7 @@ for(g in 2:length(unique_genes)){
       Normality_M[[current_gene]][i] <- NA
       #p-values not available, NA
       pvalue_Stage1[[current_gene]][i] <- NA
+      pvalue_Stage1b[[current_gene]][i] <- NA
       pvalue_Stage2[[current_gene]][i] <- NA
       ctrl_sex_pval[[current_gene]][i] = ctrl_sex_estimate[[current_gene]][i] <- NA
       KO_sex_pval[[current_gene]][i] = KO_sex_estimate[[current_gene]][i] <- NA
@@ -267,6 +421,7 @@ for(g in 2:length(unique_genes)){
         Normality_M[[current_gene]][i] <- NA
         #p-values NA
         pvalue_Stage1[[current_gene]][i] <- NA
+        pvalue_Stage1b[[current_gene]][i] <- NA
         pvalue_Stage2[[current_gene]][i] <- NA
         ctrl_sex_pval[[current_gene]][i] = ctrl_sex_estimate[[current_gene]][i] <- NA 
         KO_sex_pval[[current_gene]][i] = KO_sex_estimate[[current_gene]][i] <- NA
@@ -292,14 +447,18 @@ for(g in 2:length(unique_genes)){
         model_formula_genotype <- final_genotype_model(dataset, "Intensity")
         #test genotyp effect
         geno_effect <- testing_genotype_effect(dataset, "Intensity")
-        
-        #test genotype*sex interaction effect
+        #test sex effect
+        formula_sex_null = null_model_sex(dataset,"Intensity")
+        formula_sex_full = final_sex_model(dataset,"Intensity")
+        sex_effect= testing_sex_effect(dataset,"Intensity")
+        #test genotype-sex interaction effect
         formula_interaction_null <- null_model_Interaction(dataset, "Intensity")
         Interct_effect <- testing_Interaction_effect(dataset, "Intensity")
-        result <- gls(Intensity ~ genotype + sex + genotype*sex, data = dataset, na.action = 'na.exclude')
+        result <- gls(Intensity ~ genotype + sex + genotype: sex, data = dataset, na.action = 'na.exclude')
         summary <- nlme:::summary.gls(result)$tTable 
         #p-values
         pvalue_Stage1[[current_gene]][i] <- geno_effect
+        pvalue_Stage1[[current_gene]][i] <- sex_effect
         pvalue_Stage2[[current_gene]][i] <- Interct_effect
     
         # Individual test for classying the SD effect without grouping by sex
@@ -395,11 +554,11 @@ sapply(pvalue_Stage1,function(x){sum(x<0.05, na.rm = TRUE)})
 #Output result
 setwd("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX") 
 for(i in 1 : length(names(pvalue_Stage1))){
-  fwrite(data.table(label = All_Metabolomics_f$label, assay = All_Metabolomics_f$Assay, Metabolite=All_Metabolomics_f$CompoundName, Normality_before = Normality_before[[i]], Normality_F = Normality_F[[i]],  Normality_M = Normality_M[[i]] , numb_null = numb_null[[i]], numb_gene = numb_gene[[i]], pvalue_Stage1 = pvalue_Stage1[[i]], pvalue_stage2 = pvalue_Stage2[[i]], sep_allKO_pval = sep_allKO_pval[[i]], sep_allKO_estimate = sep_allKO_estimate[[i]], sep_FvKO_pval = sep_FvKO_pval[[i]], sep_FvKO_estimate = sep_FvKO_estimate[[i]], sep_MvKO_pval = sep_MvKO_pval[[i]], sep_MvKO_estimate = sep_MvKO_estimate[[i]], foldchange_FvKO = foldchange_FvKO[[i]], foldchange_MvKO = foldchange_MvKO[[i]], ctrl_sex_pval = ctrl_sex_pval[[i]], ctrl_sex_estimate = ctrl_sex_estimate[[i]], KO_sex_pval= KO_sex_pval[[i]], KO_sex_estimate = KO_sex_estimate[[i]]), paste0("5 TwoStage METAbol_KOSEX,(",names(pvalue_Stage1)[i],").csv"))
+  fwrite(data.table(label = All_Metabolomics_f$label, assay = All_Metabolomics_f$Assay, Metabolite=All_Metabolomics_f$CompoundName, Normality_before = Normality_before[[i]], Normality_F = Normality_F[[i]],  Normality_M = Normality_M[[i]] , numb_null = numb_null[[i]], numb_gene = numb_gene[[i]], pvalue_Stage1 = pvalue_Stage1[[i]], pvalue_stage1b = pvalue_Stage1b[[i]], pvalue_stage2 = pvalue_Stage2[[i]], fdr_Stage1=fdr_Stage1[[i]], fdr_Stage1b=fdr_Stage1b[[i]], fdr_Stage2=fdr_Stage2[[i]], sep_allKO_pval = sep_allKO_pval[[i]], sep_allKO_estimate = sep_allKO_estimate[[i]], sep_FvKO_pval = sep_FvKO_pval[[i]], sep_FvKO_estimate = sep_FvKO_estimate[[i]], sep_MvKO_pval = sep_MvKO_pval[[i]], sep_MvKO_estimate = sep_MvKO_estimate[[i]], sep_FvKO_fdr=p.adjust(sep_FvKO_pval[[i]],'fdr'), sep_MvKO_fdr=p.adjust(sep_MvKO_pval[[i]],'fdr'), foldchange_FvKO = foldchange_FvKO[[i]], foldchange_MvKO = foldchange_MvKO[[i]], ctrl_sex_pval = ctrl_sex_pval[[i]], fdr_ctrl_sex = fdr_ctrl_sex[[i]], ctrl_sex_estimate = ctrl_sex_estimate[[i]], KO_sex_pval= KO_sex_pval[[i]], fdr_KO_sex = fdr_KO_sex[[i]], KO_sex_estimate = KO_sex_estimate[[i]]), paste0("5 TwoStage METAbol_KOSEX,(",names(pvalue_Stage1)[i],").csv"))
 }
 
 
-#5 classification for pie chart and bar plot: Metabolite variable / genptype*sex interaction effect and direction
+#5 classification for pie chart and bar plot: Metabolite variable / genptype: sex interaction effect and direction
 setwd("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 # read filelist
 files_metmerge<-list.files(pattern="^5 TwoStage PHENOtype (.*),genoSD",full.names = T)
@@ -439,12 +598,11 @@ for (i in 1:length(files_metmerge)){
   c1 <- sum(met1$est_dirct == "One sex_Male only")
   c2 <- sum(met1$est_dirct == "One sex_Female only2")
   c3 <- sum(met1$est_dirct == "One sex_Male only2")
-  d<-sum(met1$est_dirct=="cannot classify")
-  d1<-sum(met1$est_dirct=="cannot classify2")
-  e<-sum(met1$est_dirct=="Genotype effect with no sex effect(real)")
-  n<-sum(met1$est_dirct=="Not significant")
+  d<-sum(met1$est_dirct == "cannot classify")
+  d1<-sum(met1$est_dirct == "cannot classify2")
+  e<-sum(met1$est_dirct == "Genotype effect with no sex effect(real)")
+  n<-sum(met1$est_dirct == "Not significant")
   PieChart_Diff_Dirct<-rbind(PieChart_Diff_Dirct,c(g,a,a1,b,b1,c,c1,c2,c3,d,d1,e,n,t))
   colnames(PieChart_Diff_Dirct)<-coltitle 
 }
 write.csv(PieChart_Diff_Dirct,file = "5 Metabol_classification.csv")
-
