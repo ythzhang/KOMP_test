@@ -59,7 +59,6 @@ Phenotype_UCDavis_e_null = Raw_Phenotype_UCDavis_e_null[!missing_index,]
 rownames(Phenotype_UCDavis_e_null) = rownames(Raw_Phenotype_UCDavis_e_null)[!missing_index]
 
 # nrow(Phenotype_UCDavis_e_null)
-
 # ==================================================================================================================================
 # Correlation analysis, sexes combined
 cor = cor(t(Null_Metabolomics_e), t(Raw_Phenotype_UCDavis_e_null),use = "pairwise.complete.obs", method = "spearman")
