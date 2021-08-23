@@ -276,7 +276,7 @@ fwrite(data.table(summ), "9_Summary correlation in each class.csv")
 
 
 # -----------------------------------------------------------------------------------------------------------
-#### Merge all significant corr result in  phenotype and metabolite
+#### Merge all significant phenotype-metabolite correlation into one table
 
 files_cor <- list.files(pattern  ="^9_COMBINED correlation result (.*) in Null", full.names = T)
 length(files_cor)
