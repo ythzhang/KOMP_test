@@ -4,11 +4,9 @@ setwd("")
 
 # read metabolomics dataset and extract the matrix
 Null_Metabolomics = wcmc::read_data("Supplementary Data 1_raw metabolomics_v2_null.xlsx")
-
 Null_Metabolomics_p = Null_Metabolomics$p
 Null_Metabolomics_f = Null_Metabolomics$f
 Null_Metabolomics_e = Null_Metabolomics$e_matrix
-
 Null_Metabolomics_e[Null_Metabolomics_e==0] <- NA
 Null_Metabolomics_e[Null_Metabolomics_e=="NA"] <- NA
 Null_Metabolomics_e[Null_Metabolomics_e=="NaN"] <- NA
@@ -25,7 +23,6 @@ num_missing_female = apply(Null_Metabolomics_e,1,function(x){
   sum(is.na(x[Null_Metabolomics_p$Gender %in% "Female"]))
 })
 names(num_missing_male) = names(num_missing_female) = Null_Metabolomics_f$label
-
 missing_index = ((num_missing_male/sum(Null_Metabolomics_p$Gender %in% "Male")) >= 0.7) & ((num_missing_female/sum(Null_Metabolomics_p$Gender %in% "Female")) >= 0.7)
 Null_Metabolomics_e = Null_Metabolomics_e[!missing_index,]
 Null_Metabolomics_f = Null_Metabolomics_f[!missing_index,]
@@ -36,12 +33,12 @@ rownames(Null_Metabolomics_e) = Null_Metabolomics_f$label
 # for(i in 1:nrow(Null_Metabolomics_e)){
 #   Null_Metabolomics_e[i,is.na(Null_Metabolomics_e[i,])] = 0.5 * min(Null_Metabolomics_e[i,], na.rm = TRUE)
 # }
+# --------------------------------------------------------------------------------------------------------------------------------
 # read phenotype data and extrax matrix
 Phenotype_UCDavis = wcmc::read_data("Supplementary Data 2_raw phenotype_null.xlsx")
 Raw_Phenotype_UCDavis_p_null = Phenotype_UCDavis$p
 Raw_Phenotype_UCDavis_f_null = Phenotype_UCDavis$f
 Raw_Phenotype_UCDavis_e_null = Phenotype_UCDavis$e_matrix
-
 rownames(Raw_Phenotype_UCDavis_e_null) = Raw_Phenotype_UCDavis_f_null$label
 Raw_Phenotype_UCDavis_e_null = apply(Raw_Phenotype_UCDavis_e_null,2,as.numeric)
 
@@ -53,18 +50,15 @@ num_missing_female = apply(Raw_Phenotype_UCDavis_e_null,1,function(x){
   sum(is.na(x[Raw_Phenotype_UCDavis_p_null$Gender %in% "Female"]))
 })
 # names(num_missing_male) = names(num_missing_female) = Raw_Phenotype_UCDavis_f_merge$label
-
 missing_index = ((num_missing_male/sum(Raw_Phenotype_UCDavis_p_null$Gender %in% "Male")) >= 0.7)&((num_missing_female/sum(Raw_Phenotype_UCDavis_p_null$Gender %in% "Female")) >= 0.7)
 Phenotype_UCDavis_e_null = Raw_Phenotype_UCDavis_e_null[!missing_index,]
 rownames(Phenotype_UCDavis_e_null) = rownames(Raw_Phenotype_UCDavis_e_null)[!missing_index]
-
 # nrow(Phenotype_UCDavis_e_null)
 # ==================================================================================================================================
 # Correlation analysis, sexes combined
 cor = cor(t(Null_Metabolomics_e), t(Raw_Phenotype_UCDavis_e_null),use = "pairwise.complete.obs", method = "spearman")
 rownames(cor) = rownames(Null_Metabolomics_e)
 colnames(cor) = rownames(Raw_Phenotype_UCDavis_e_null)
-
 cor_test = cor
 for(i in 1:nrow(cor_test)){
   print(i)
@@ -76,17 +70,14 @@ for(i in 1:nrow(cor_test)){
     }
   }
 }
-
 write.csv(cor,paste0("1_Null_correlation,Pheno-Metabo_(coeff both sex).csv"))
 write.csv(cor_test,paste0("2_Null_correlation,Pheno-Metabo_(pvalue both sex).csv"))
 # ============================================================================================
 # correlation analysis, female only
 female_labels = Raw_Phenotype_UCDavis_p_null$label[Raw_Phenotype_UCDavis_p_null$Gender %in% "Female"]
 cor_female = cor(t(Null_Metabolomics_e[,colnames(Null_Metabolomics_e) %in% female_labels]), t(Raw_Phenotype_UCDavis_e_null[,colnames(Raw_Phenotype_UCDavis_e_null) %in% female_labels]),use = "pairwise.complete.obs", method = "spearman")
-
 rownames(cor_female) = rownames(Null_Metabolomics_e[,colnames(Null_Metabolomics_e) %in% female_labels])
 colnames(cor_female) = rownames(Raw_Phenotype_UCDavis_e_null[,colnames(Raw_Phenotype_UCDavis_e_null) %in% female_labels])
-
 cor_test_female = cor_female
 for(i in 1:nrow(cor_test_female)){
   print(i)
@@ -126,7 +117,6 @@ write.csv(cor_test_male,paste0("6_Null_correlation_male,the Corr Pheno-Metabo_(p
 # ========================================================================================================================================================
 # Recombine correlation results
 # setwd("")
-
 cor_bothsex<-read.csv("1_Null_correlation,Pheno-Metabo_(coeff both sex).csv",header = T )
 pval_bothsex<-read.csv("2_Null_correlation,Pheno-Metabo_(pvalue both sex).csv",header = T)
 cor_female<-read.csv("3_Null_correlation_female,Corr Pheno-Metabo_(coeff female).csv", header = T)
@@ -149,7 +139,6 @@ Pheno_count_female = apply(Raw_Phenotype_UCDavis_e_null,1,function(x){
 Pheno_count_male = apply(Raw_Phenotype_UCDavis_e_null,1,function(x){
   sum(!is.na(x[Raw_Phenotype_UCDavis_p_null$Gender %in% "Male"]))
 })
-
 # ========================================================================================
 library(data.table)
 # confirm that rownames and colnames of files match to each other, exclude row 1 and colume 1.
@@ -163,7 +152,6 @@ for (i in 2:length(colnames(pval_female))){
     colmatch[i] <- "FALSE" 
   }
 }
-
 library(data.table)
 colmatch<-c()
 for (i in 2:length(colnames(pval_female))){
@@ -187,11 +175,9 @@ for (i in 2:ncol(pval_female)){
   Corr_pval_both <- pval_bothsex[,i]
   Corr_pval_f <- pval_female[,i]
   Corr_pval_m <- pval_male[,i]
-  
   Corr_coeff_both <- cor_bothsex[,i]
   Corr_coeff_f <- cor_female[,i]
   Corr_coeff_m <- cor_male[,i]
-  
   Metabolite_label <- pval_female$Label
   Assay <- Null_Metabolomics_f$Assay
   Metabolites <- Null_Metabolomics_f$CompoundName
@@ -202,7 +188,6 @@ for (i in 2:ncol(pval_female)){
   Pheno_current_count_male <- Pheno_count_male[i-1]
   fwrite(data.table(Metabolite_label, Assay, Metabolites, Corr_coeff_both, Corr_coeff_f, Corr_coeff_m, Corr_pval_both, Corr_pval_f, Corr_pval_m, Phenotype_label, Procedure_name, Phenotype_name, Pheno_name, Metabo_count_female, Metabo_count_male, Pheno_current_count_female, Pheno_current_count_male), paste0("9_COMBINED correlation result (",list[i],") (",colnames(pval_female)[i],") in Null.csv"))
 }
-
 # ==================================================================================================================
 ### classify the correlation result based on the p value and cor value
 files_cor <- list.files(pattern="^9_COMBINED correlation result (.*) in Null",full.names = T)
@@ -212,7 +197,6 @@ for(i in 1:length(files_cor)){
   corr <- read.csv(files_cor[i])
   corr$classify[(corr$Corr_pval_f < 0.05)|(corr$Corr_pval_m < 0.05)] <- 'significant'
   corr$classify[(corr$Corr_pval_f >= 0.05)&(corr$Corr_pval_m >= 0.05)] <- 'non-significant'
-  
   corr$class <- 'Non-significant'
   corr$class[(corr$Corr_pval_f < 0.05 & corr$Corr_pval_m < 0.05) & (corr$Corr_coeff_f/corr$Corr_coeff_m < 0)] = 'Different direction'
   corr$class[(corr$Corr_pval_f < 0.05 & corr$Corr_pval_m < 0.05 )& (corr$Corr_coeff_f/corr$Corr_coeff_m > 0)] = 'Different size'
@@ -227,7 +211,6 @@ for(i in 1:length(files_cor)){
 ###Summary classes for each phenotype
 files_cor <- list.files(pattern="^9_COMBINED correlation result (.*) in Null", full.names = T)
 length(files_cor)
-
 #list<-sprintf('%0.3d', 1:300)
 summ<-matrix(c('Metabolite label', 'Different direction', 'Different size', 'Significant only in female', 'Significant only in male', 'Significant only if sexes combined', 'Non-significant'), byrow = FALSE)
 #summ[,1]=c('Differentdirection','Differentsize','Onesex','Nonsignificant')
@@ -235,21 +218,18 @@ for(i in 1:length(files_cor)){
   corr <- read.csv(files_cor[i])
   corr$classify[(corr$Corr_pval_f < 0.05) | (corr$Corr_pval_m < 0.05)] <- 'significant'
   corr$classify[(corr$Corr_pval_f >= 0.05) & (corr$Corr_pval_m >= 0.05)] <- 'non-significant'
-  
   corr$class <-'Non-significant'
   corr$class[(corr$Corr_pval_f < 0.05 & corr$Corr_pval_m < 0.05) & (corr$Corr_coeff_f/corr$Corr_coeff_m < 0)] = 'Different direction'
   corr$class[(corr$Corr_pval_f < 0.05 & corr$Corr_pval_m < 0.05) & (corr$Corr_coeff_f/corr$Corr_coeff_m > 0)] = 'Different size'
   corr$class[corr$Corr_pval_f < 0.05 & corr$Corr_pval_m > 0.05] = 'Significant only in female'
   corr$class[corr$Corr_pval_f > 0.05 & corr$Corr_pval_m < 0.05] = 'Significant only in male'
   corr$class[(corr$Corr_pval_f >= 0.05 & corr$Corr_pval_m >= 0.05) & (corr$Corr_coeff_f/corr$Corr_coeff_m > 0) & (corr$Corr_coeff_f/corr$Corr_coeff_both > 0) & corr$Corr_pval_both < 0.05] = 'Significant only if sexes combined'
-  
   Nonsignificant <- sum(corr$class == 'Non-significant')
   Differentdirection <- sum(corr$class == 'Different direction')
   Differentsize <- sum(corr$class == 'Different size')
   Sig_only_in_female <- sum(corr$class == 'Significant only in female')
   Sig_only_in_male <- sum(corr$class == 'Significant only in male')
   Significant_only_if_sexes_combined <- sum(corr$class == 'Significant only if sexes combined')
-  
   k = i + 1
   a <- c(colnames(pval_female[k]), Differentdirection, Differentsize, Sig_only_in_female, Sig_only_in_male, Significant_only_if_sexes_combined, Nonsignificant)
   a <- as.matrix(a)
@@ -260,7 +240,6 @@ fwrite(data.table(summ), "9_Summary correlation in each class.csv")
 
 # -----------------------------------------------------------------------------------------------------------
 #### Merge all significant phenotype-metabolite correlation into one table
-
 files_cor <- list.files(pattern  ="^9_COMBINED correlation result (.*) in Null", full.names = T)
 length(files_cor)
 corrmerge <- matrix(nrow = 0, ncol = 17)
@@ -268,14 +247,12 @@ for(i in 1:length(files_cor)){
   corr <- read.csv(files_cor[i])
   corr$classify[(corr$Corr_pval_f < 0.05) | (corr$Corr_pval_m < 0.05)] <- 'significant'
   corr$classify[(corr$Corr_pval_f >= 0.05) & (corr$Corr_pval_m >= 0.05)] <- 'non-significant'
-  
   corr$class <-'Non-significant'
   corr$class[(corr$Corr_pval_f < 0.05 & corr$Corr_pval_m < 0.05) & (corr$Corr_coeff_f/corr$Corr_coeff_m < 0)] = 'Different direction'
   corr$class[(corr$Corr_pval_f < 0.05 & corr$Corr_pval_m < 0.05) & (corr$Corr_coeff_f/corr$Corr_coeff_m > 0)] = 'Different size'
   corr$class[corr$Corr_pval_f < 0.05 & corr$Corr_pval_m > 0.05] = 'Significant only in female'
   corr$class[corr$Corr_pval_f > 0.05 & corr$Corr_pval_m < 0.05] = 'Significant only in male'
   corr$class[(corr$Corr_pval_f >= 0.05 & corr$Corr_pval_m >= 0.05) & (corr$Corr_coeff_f/corr$Corr_coeff_m > 0) & (corr$Corr_coeff_f/corr$Corr_coeff_both > 0) & corr$Corr_pval_both < 0.05] = 'Significant only if sexes combined'
-  
   index <- corr$class == 'Non-significant'
   corr1 <- corr[!index, ]
   k = i + 1
@@ -286,5 +263,4 @@ for(i in 1:length(files_cor)){
   head(corrmerge)
   # corrmerge <- na.omit(corrmerge)
 }
-
 write.csv(corrmerge,paste0("9_Heatmap Merged Table corr significant in Null.csv"))
