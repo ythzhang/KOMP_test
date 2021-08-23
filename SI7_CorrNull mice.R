@@ -1,7 +1,6 @@
 # SI7 in null mice, the correlation between each phenotype and each metabolite.
 # setweed
 setwd("")
-
 # read metabolomics dataset and extract the matrix
 Null_Metabolomics = wcmc::read_data("Supplementary Data 1_raw metabolomics_v2_null.xlsx")
 Null_Metabolomics_p = Null_Metabolomics$p
@@ -13,7 +12,6 @@ Null_Metabolomics_e[Null_Metabolomics_e=="NaN"] <- NA
 Null_Metabolomics_e[Null_Metabolomics_e=="Inf"] <- NA
 Null_Metabolomics_e[!is.finite(Null_Metabolomics_e)] <- NA
 sum(Null_Metabolomics_e=="Inf")
-
 # Null_Metabolomics_e[100,1]
 #### filter missing value >= 70%
 num_missing_male = apply(Null_Metabolomics_e,1,function(x){
@@ -41,7 +39,6 @@ Raw_Phenotype_UCDavis_f_null = Phenotype_UCDavis$f
 Raw_Phenotype_UCDavis_e_null = Phenotype_UCDavis$e_matrix
 rownames(Raw_Phenotype_UCDavis_e_null) = Raw_Phenotype_UCDavis_f_null$label
 Raw_Phenotype_UCDavis_e_null = apply(Raw_Phenotype_UCDavis_e_null,2,as.numeric)
-
 # filter missingvalue >=70%
 num_missing_male = apply(Raw_Phenotype_UCDavis_e_null,1,function(x){
   sum(is.na(x[Raw_Phenotype_UCDavis_p_null$Gender %in% "Male"]))
@@ -92,11 +89,9 @@ for(i in 1:nrow(cor_test_female)){
 }
 write.csv(cor_female,paste0("3_Null_correlation_female,Corr Pheno-Metabo_(coeff female).csv"))
 write.csv(cor_test_female,paste0("4_Null_correlation_female,the Corr Pheno-Metabo_(pvalue female).csv"))
-
 # correlation analysis, male only
 male_labels = Raw_Phenotype_UCDavis_p_null$label[Raw_Phenotype_UCDavis_p_null$Gender %in% "Male"]
 cor_male = cor(t(Null_Metabolomics_e[,colnames(Null_Metabolomics_e) %in% male_labels]), t(Raw_Phenotype_UCDavis_e_null[,colnames(Raw_Phenotype_UCDavis_e_null) %in% male_labels]),use = "pairwise.complete.obs", method = "spearman")
-
 rownames(cor_male) = rownames(Null_Metabolomics_e[,colnames(Null_Metabolomics_e) %in% male_labels])
 colnames(cor_male) = rownames(Raw_Phenotype_UCDavis_e_null[,colnames(Raw_Phenotype_UCDavis_e_null) %in% male_labels])
 cor_test_male = cor_male
@@ -113,7 +108,6 @@ for(i in 1:nrow(cor_test_male)){
 }
 write.csv(cor_male,paste0("5_Null_correlation_male,Corr Pheno-Metabo_(coeff male).csv"))
 write.csv(cor_test_male,paste0("6_Null_correlation_male,the Corr Pheno-Metabo_(pvalue male).csv"))
-
 # ========================================================================================================================================================
 # Recombine correlation results
 # setwd("")
@@ -206,7 +200,6 @@ for(i in 1:length(files_cor)){
   #corr1<-corr[corr$class=='significant',]
   write.csv(corr,paste0("9 Extracted correlation result (",list[k],") (",colnames(pval_female)[k],") significant in Null_both sex.csv"))
 }
-
 # -------------------------------------------------------------------------------------------------------------
 ###Summary classes for each phenotype
 files_cor <- list.files(pattern="^9_COMBINED correlation result (.*) in Null", full.names = T)
@@ -237,7 +230,6 @@ for(i in 1:length(files_cor)){
 }
 #colnames(summ)=colnames(pval_female)
 fwrite(data.table(summ), "9_Summary correlation in each class.csv")
-
 # -----------------------------------------------------------------------------------------------------------
 #### Merge all significant phenotype-metabolite correlation into one table
 files_cor <- list.files(pattern  ="^9_COMBINED correlation result (.*) in Null", full.names = T)
