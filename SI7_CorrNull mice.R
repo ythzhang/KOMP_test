@@ -306,10 +306,3 @@ for(i in 1:length(files_cor)){
 }
 
 write.csv(corrmerge,paste0("9_Heatmap Merged Table corr significant in Null.csv"))
-
-
-
-
-
-
-
