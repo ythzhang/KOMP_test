@@ -79,7 +79,6 @@ for(i in 1:nrow(cor_test)){
 
 write.csv(cor,paste0("1_Null_correlation,Pheno-Metabo_(coeff both sex).csv"))
 write.csv(cor_test,paste0("2_Null_correlation,Pheno-Metabo_(pvalue both sex).csv"))
-
 # ============================================================================================
 # correlation analysis, female only
 female_labels = Raw_Phenotype_UCDavis_p_null$label[Raw_Phenotype_UCDavis_p_null$Gender %in% "Female"]
@@ -157,7 +156,6 @@ Pheno_count_male = apply(Raw_Phenotype_UCDavis_e_null,1,function(x){
   sum(!is.na(x[Raw_Phenotype_UCDavis_p_null$Gender %in% "Male"]))
 })
 
-
 # ========================================================================================
 library(data.table)
 # confirm that rownames and colnames of files match to each other, exclude row 1 and colume 1.
@@ -184,7 +182,6 @@ for (i in 2:length(colnames(pval_female))){
   }
 }
 
-
 # ==================================================================================================================================
 #merge pval_both, pval_f, pval_m, cor_both, cor_f, cor_m based on each phenotype with all metabolites
 list<-sprintf('%0.3d', 1:300)
@@ -196,7 +193,6 @@ i=2
 for (i in 2:ncol(pval_female)){
   
   Pheno_name <- colnames(pval_female)[i]
-  
   Corr_pval_both <- pval_bothsex[,i]
   Corr_pval_f <- pval_female[,i]
   Corr_pval_m <- pval_male[,i]
@@ -215,7 +211,6 @@ for (i in 2:ncol(pval_female)){
   Pheno_current_count_male <- Pheno_count_male[i-1]
   fwrite(data.table(Metabolite_label, Assay, Metabolites, Corr_coeff_both, Corr_coeff_f, Corr_coeff_m, Corr_pval_both, Corr_pval_f, Corr_pval_m, Phenotype_label, Procedure_name, Phenotype_name, Pheno_name, Metabo_count_female, Metabo_count_male, Pheno_current_count_female, Pheno_current_count_male), paste0("9_COMBINED correlation result (",list[i],") (",colnames(pval_female)[i],") in Null.csv"))
 }
-
 
 # ==================================================================================================================
 ### classify the correlation result based on the p value and cor value
@@ -237,7 +232,6 @@ for(i in 1:length(files_cor)){
   #corr1<-corr[corr$class=='significant',]
   write.csv(corr,paste0("9 Extracted correlation result (",list[k],") (",colnames(pval_female)[k],") significant in Null_both sex.csv"))
 }
-
 
 # -------------------------------------------------------------------------------------------------------------
 ###Summary classes for each phenotype
@@ -273,7 +267,6 @@ for(i in 1:length(files_cor)){
 }
 #colnames(summ)=colnames(pval_female)
 fwrite(data.table(summ), "9_Summary correlation in each class.csv")
-
 
 # -----------------------------------------------------------------------------------------------------------
 #### Merge all significant phenotype-metabolite correlation into one table
