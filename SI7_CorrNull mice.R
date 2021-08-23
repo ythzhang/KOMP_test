@@ -128,17 +128,11 @@ write.csv(cor_test_male,paste0("6_Null_correlation_male,the Corr Pheno-Metabo_(p
 # setwd("")
 
 cor_bothsex<-read.csv("1_Null_correlation,Pheno-Metabo_(coeff both sex).csv",header = T )
-
 pval_bothsex<-read.csv("2_Null_correlation,Pheno-Metabo_(pvalue both sex).csv",header = T)
-
 cor_female<-read.csv("3_Null_correlation_female,Corr Pheno-Metabo_(coeff female).csv", header = T)
-
 pval_female<-read.csv("4_Null_correlation_female,the Corr Pheno-Metabo_(pvalue female).csv",header = T)
-
 cor_male<-read.csv("5_Null_correlation_male,Corr Pheno-Metabo_(coeff male).csv",header = T)
-
 pval_male<-read.csv("6_Null_correlation_male,the Corr Pheno-Metabo_(pvalue male).csv",header = T)
-
 # ===========================================================================================================================================
 #report sample number for metabolomics data
 Metabo_count_female = apply(Null_Metabolomics_e, 1, function(x){
@@ -181,17 +175,14 @@ for (i in 2:length(colnames(pval_female))){
     colmatch[i] <- "FALSE"
   }
 }
-
 # ==================================================================================================================================
 #merge pval_both, pval_f, pval_m, cor_both, cor_f, cor_m based on each phenotype with all metabolites
 list<-sprintf('%0.3d', 1:300)
 colnames(pval_female)[1] <- 'Label'
 colnames(pval_male)[1] <- 'Label'
 colnames(pval_bothsex)[1] <- 'Label'
-
 i=2
 for (i in 2:ncol(pval_female)){
-  
   Pheno_name <- colnames(pval_female)[i]
   Corr_pval_both <- pval_bothsex[,i]
   Corr_pval_f <- pval_female[,i]
@@ -214,7 +205,6 @@ for (i in 2:ncol(pval_female)){
 
 # ==================================================================================================================
 ### classify the correlation result based on the p value and cor value
-
 files_cor <- list.files(pattern="^9_COMBINED correlation result (.*) in Null",full.names = T)
 length(files_cor)
 list<-sprintf('%0.3d', 1:300)
@@ -292,7 +282,6 @@ for(i in 1:length(files_cor)){
   if(nrow(corr1) > 0){
     corr1$pheno <- colnames(pval_female[k])
   }
-  
   corrmerge <- rbind(corrmerge,corr1)
   head(corrmerge)
   # corrmerge <- na.omit(corrmerge)
