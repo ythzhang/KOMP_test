@@ -37,7 +37,7 @@ Phenotype_UCDavis = wcmc::read_data("Supplementary Data 2_raw phenotype_null.xls
 Raw_Phenotype_UCDavis_p_null = Phenotype_UCDavis$p
 Raw_Phenotype_UCDavis_f_null = Phenotype_UCDavis$f
 Raw_Phenotype_UCDavis_e_null = Phenotype_UCDavis$e_matrix
-rownames(Raw_Phenotype_UCDavis_e_null) = Raw_Phenotype_UCDavis_f_null$label
+# rownames(Raw_Phenotype_UCDavis_e_null) = Raw_Phenotype_UCDavis_f_null$label
 Raw_Phenotype_UCDavis_e_null = apply(Raw_Phenotype_UCDavis_e_null,2,as.numeric)
 # filter missingvalue >=70%
 num_missing_male = apply(Raw_Phenotype_UCDavis_e_null,1,function(x){
@@ -49,6 +49,8 @@ num_missing_female = apply(Raw_Phenotype_UCDavis_e_null,1,function(x){
 # names(num_missing_male) = names(num_missing_female) = Raw_Phenotype_UCDavis_f_merge$label
 missing_index = ((num_missing_male/sum(Raw_Phenotype_UCDavis_p_null$Gender %in% "Male")) >= 0.7)&((num_missing_female/sum(Raw_Phenotype_UCDavis_p_null$Gender %in% "Female")) >= 0.7)
 Phenotype_UCDavis_e_null = Raw_Phenotype_UCDavis_e_null[!missing_index,]
+Raw_Phenotype_UCDavis_f_null$label
+rownames(Raw_Phenotype_UCDavis_e_null) = Raw_Phenotype_UCDavis_f_null$label
 rownames(Phenotype_UCDavis_e_null) = rownames(Raw_Phenotype_UCDavis_e_null)[!missing_index]
 # nrow(Phenotype_UCDavis_e_null)
 # ==================================================================================================================================
