@@ -3,7 +3,7 @@
 
 #######################################################################################################
 # Load packages
-setwd("C:\\Users\\yzhan\\Documents\\Fiehn\\4_KOMP Neuro\\Results_Luis\\121420\\Figure3_Upf3b\\_Boxplot_Plasma")
+setwd("xxx")
 library(nlme)
 library(RNOmni)
 # for each genotype, check which metabolite is associated with gene * gender, gene, gender, or not significant at all.
@@ -138,8 +138,8 @@ testing_sex_effect<-function(dataset, Intensity){
 # ----------------------------------------------------------------------------------------------------------------
 #######################################################################################################
 #load statistical output from large scale assessment of role of sex across IMPC data
-setwd("C:\\Users\\yzhan\\Documents\\Fiehn\\4_KOMP Neuro\\Results_Luis\\121420\\Figure3_Upf3b\\_Boxplot_Plasma")
-All_Metabolomics = wcmc::read_data("mx 516329 Jenny KOMP mouse plasma, by mtic 1,5-ag_R stats_fc.xlsx", sheet = "Upf3b_raw")
+setwd("xxx")
+All_Metabolomics = wcmc::read_data("xxx.xlsx", sheet = "xxx")
 All_Metabolomics_p = All_Metabolomics$p ##(first row plus label row)
 All_Metabolomics_f = All_Metabolomics$f  ##(first column plus label column)
 All_Metabolomics_e = All_Metabolomics$e_matrix ###(just matrix values)
@@ -155,8 +155,59 @@ All_Metabolomics_e[All_Metabolomics_e =="Inf"] <- NA
 sum(All_Metabolomics_e == "Inf")
 # --------------------------------------------------------------------------------------------------------------------------------------------
 # missing values replacement
+
+for(g in 1:length(unique_genes)){
+  
+  current_gene = unique_genes[g]
+  
+  current_label = All_Metabolomics_p$label[All_Metabolomics_p$Genotype %in% c(current_gene)]
+  current_e = All_Metabolomics_e[, current_label]
+  
+  current_label_F = All_Metabolomics_p$label[All_Metabolomics_p$Genotype %in% c(current_gene)&All_Metabolomics_p$Gender%in%'Female']
+  current_e_F = All_Metabolomics_e[, current_label_F]
+  
+  current_label_M = All_Metabolomics_p$label[All_Metabolomics_p$Genotype %in% c(current_gene)&All_Metabolomics_p$Gender%in%'Male']
+  current_e_M =All_Metabolomics_e[,current_label_M]
+  
+  if (current_gene=='null'){
+    for(i in 1:nrow(current_e)){
+      #Replace female NA
+      if((sum(is.na(current_e_F[i,]))>=14) & (sum(is.na(current_e_M[i,]))>=14)){
+        current_e_F[i,] = NA
+        current_e_M[i,] = NA
+      }else if((sum(is.na(current_e_F[i,]))>=14) & (sum(is.na(current_e_M[i,]))< 14)){
+        current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min=0.49,max=0.51) * min(current_e[i,!is.na(current_e[i,])])
+        current_e_M[i,] = current_e_M[i,]
+        
+      }else if((sum(is.na(current_e_F[i,])) < 14) & (sum(is.na(current_e_M[i,])) >= 14)){
+        current_e_F[i,] = current_e_F[i,]
+        current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min=0.49,max=0.51) * min(current_e[i,!is.na(current_e[i,])])
+      }else{
+        current_e_F[i,] = current_e_F[i,]
+        current_e_M[i,] = current_e_M[i,]
+      }
+    }
+  }else{
+    
+    for(i in 1:nrow(current_e)){
+      if(sum(is.na(current_e[i,]))>=4){
+        current_e_F[i,] = NA
+        current_e_M[i,] = NA
+      }else {
+        current_e_F[i,is.na(current_e_F[i,])] = runif(sum(is.na(current_e_F[i,])),min=0.49,max=0.51) * min(current_e[i,!is.na(current_e[i,])])
+        current_e_M[i,is.na(current_e_M[i,])] = runif(sum(is.na(current_e_M[i,])),min=0.49,max=0.51) * min(current_e[i,!is.na(current_e[i,])])
+      }
+    }
+  }
+  All_Metabolomics_e_no_mising[,current_label_F] = current_e_F
+  All_Metabolomics_e_no_mising[,current_label_M] = current_e_M
+}
+
+
+
+
 # Already replaecd via BinBase for GC-MS data
-All_Metabolomics_e_no_mising <- All_Metabolomics_e
+# All_Metabolomics_e_no_mising <- All_Metabolomics_e
 # ---------------------------------------------------------
 # Testing and deal with missing values
 # Skip this step for groups with number >3
@@ -207,7 +258,7 @@ null_e_male = All_Metabolomics_e_no_mising[, null_label]
       if(length(model_afterFIXED) <= 1){
         #count number for WT mice and KO mice
         numb_null[i] <- sum(dataset$genotype %in% "null")
-        numb_gene[[current_gene]][i] <- sum(dataset$genotype %in% "Upf3b")
+        numb_gene[[current_gene]][i] <- sum(dataset$genotype %in% "Npc2")
         #normality test is NA
         Normality_before[i] <- NA
         Normality_after[i] <- NA
@@ -227,10 +278,10 @@ null_e_male = All_Metabolomics_e_no_mising[, null_label]
         fdr_ctrl_sex = fdr_KO_sex <- NA
         
         # fold-change calculation for female KO mice to female WT mice
-        foldchange_all[i] <- mean(dataset$Intensity_raw[dataset$genotype%in%"Upf3b"],na.rm = T)/ mean(dataset$Intensity_raw[dataset$genotype %in% "null"], na.rm = T) 
-        foldchange_FvKO[i] <- mean(dataset$Intensity[dataset$genotype %in% "Upf3b" & dataset$sex %in% "Female"], na.rm = T)/ mean(dataset$Intensity[dataset$genotype %in% "null" & dataset$sex %in% "Female"], na.rm = T)
+        foldchange_all[i] <- mean(dataset$Intensity_raw[dataset$genotype%in%"Npc2"],na.rm = T)/ mean(dataset$Intensity_raw[dataset$genotype %in% "null"], na.rm = T) 
+        foldchange_FvKO[i] <- mean(dataset$Intensity[dataset$genotype %in% "Npc2" & dataset$sex %in% "Female"], na.rm = T)/ mean(dataset$Intensity[dataset$genotype %in% "null" & dataset$sex %in% "Female"], na.rm = T)
         # fold-change calculation for male KO mice to male WT mice
-        foldchange_MvKO[i] <- mean(dataset$Intensity[dataset$genotype %in% "Upf3b" & dataset$sex %in% "Male"], na.rm = T)/ mean(dataset$Intensity[dataset$genotype %in% "null" & dataset$sex %in% "Male"], na.rm = T)
+        foldchange_MvKO[i] <- mean(dataset$Intensity[dataset$genotype %in% "Npc2" & dataset$sex %in% "Male"], na.rm = T)/ mean(dataset$Intensity[dataset$genotype %in% "null" & dataset$sex %in% "Male"], na.rm = T)
       }else{
         # if statistical analysis can be performed, test normality before data tranformation
         Normality_before[i] <- shapiro.test(dataset$Intensity_raw)$p.value
@@ -240,7 +291,7 @@ null_e_male = All_Metabolomics_e_no_mising[, null_label]
         Normality_M[i] <- shapiro.test(dataset$Intensity[dataset$sex %in% "Male"])$p.value
         #count number of WT mice and KO mice
         numb_null[i] <- sum(dataset$genotype %in% "null")
-        numb_gene[i] <- sum(dataset$genotype %in% "Upf3b")
+        numb_gene[i] <- sum(dataset$genotype %in% "Npc2")
         # statistical test for each model
         model_formula_null <- null_model_genotype(dataset, "Intensity")
         model_formula_genotype <- final_genotype_model(dataset, "Intensity")
@@ -310,9 +361,9 @@ null_e_male = All_Metabolomics_e_no_mising[, null_label]
         }
         
         # fold change calculation
-        foldchange_all[i] <- mean(dataset$Intensity_raw[dataset$genotype%in%"Upf3b"],na.rm = T)/ mean(dataset$Intensity_raw[dataset$genotype %in% "null"], na.rm = T) 
-        foldchange_FvKO[i] <- mean(dataset$Intensity_raw[dataset$genotype %in% "Upf3b" & dataset$sex %in% "Female"], na.rm = T)/ mean(dataset$Intensity_raw[dataset$genotype %in% "null" & dataset$sex %in% "Female"], na.rm = T)
-        foldchange_MvKO[i] <- mean(dataset$Intensity_raw[dataset$genotype %in% "Upf3b" & dataset$sex %in% "Male"], na.rm = T)/ mean(dataset$Intensity_raw[dataset$genotype %in% "null" & dataset$sex %in% "Male"], na.rm = T)
+        foldchange_all[i] <- mean(dataset$Intensity_raw[dataset$genotype%in%"Npc2"],na.rm = T)/ mean(dataset$Intensity_raw[dataset$genotype %in% "null"], na.rm = T) 
+        foldchange_FvKO[i] <- mean(dataset$Intensity_raw[dataset$genotype %in% "Npc2" & dataset$sex %in% "Female"], na.rm = T)/ mean(dataset$Intensity_raw[dataset$genotype %in% "null" & dataset$sex %in% "Female"], na.rm = T)
+        foldchange_MvKO[i] <- mean(dataset$Intensity_raw[dataset$genotype %in% "Npc2" & dataset$sex %in% "Male"], na.rm = T)/ mean(dataset$Intensity_raw[dataset$genotype %in% "null" & dataset$sex %in% "Male"], na.rm = T)
     
         # subset data for wildtype mice by sex, assess sex effect in WT group    
         ctrl_data <- dataset[dataset$genotype %in% "null"]
@@ -331,7 +382,7 @@ null_e_male = All_Metabolomics_e_no_mising[, null_label]
         }
         
         # subset data for KO strain mice by sex, assess sex effect in KO group 
-        KO_data = dataset[dataset$genotype %in% "Upf3b"]
+        KO_data = dataset[dataset$genotype %in% "Npc2"]
         KO_test <- tryCatch({
           gls(Intensity ~sex, data = KO_data, na.action = 'na.exclude')
         }, error = function(er){
@@ -360,7 +411,7 @@ sum(pvalue_Stage1<0.05, na.rm = TRUE)
 
 #Output result
 
-  fwrite(data.table(label = All_Metabolomics_f$label, Metabolite = All_Metabolomics_f$`BinBase name`, Normality_before = Normality_before, Normality_after = Normality_after, Normality_F = Normality_F,  Normality_M = Normality_M, numb_null = numb_null, numb_gene = numb_gene, pvalue_stage1 = pvalue_Stage1, pvalue_stage2 = pvalue_Stage2, pvalue_stage3 = pvalue_Stage3, sep_allKO_pval = sep_allKO_pval, sep_allKO_estimate = sep_allKO_estimate, foldchange_all = foldchange_all, sep_FvKO_pval = sep_FvKO_pval, sep_FvKO_estimate = sep_FvKO_estimate, foldchange_FvKO = foldchange_FvKO, sep_MvKO_pval = sep_MvKO_pval, sep_MvKO_estimate = sep_MvKO_estimate, foldchange_MvKO = foldchange_MvKO, ctrl_sex_pval = ctrl_sex_pval, ctrl_sex_estimate = ctrl_sex_estimate, KO_sex_pval = KO_sex_pval, KO_sex_estimate = KO_sex_estimate, fdr_stage1 = fdr_Stage1, fdr_stage2 = fdr_Stage2, fdr_stage3 = fdr_Stage3, sep_FvKO_fdr = p.adjust(sep_FvKO_pval,'fdr'), sep_MvKO_fdr = p.adjust(sep_MvKO_pval, 'fdr'), fdr_ctrl_sex = fdr_ctrl_sex, fdr_KO_sex = fdr_KO_sex), "5 TwoStage METAbol_KO SEX_Upf3b plasma.csv")
+  fwrite(data.table(label = All_Metabolomics_f$label, Metabolite = All_Metabolomics_f$`BinBase name`, Normality_before = Normality_before, Normality_after = Normality_after, Normality_F = Normality_F,  Normality_M = Normality_M, numb_null = numb_null, numb_gene = numb_gene, pvalue_stage1 = pvalue_Stage1, pvalue_stage2 = pvalue_Stage2, pvalue_stage3 = pvalue_Stage3, sep_allKO_pval = sep_allKO_pval, sep_allKO_estimate = sep_allKO_estimate, foldchange_all = foldchange_all, sep_FvKO_pval = sep_FvKO_pval, sep_FvKO_estimate = sep_FvKO_estimate, foldchange_FvKO = foldchange_FvKO, sep_MvKO_pval = sep_MvKO_pval, sep_MvKO_estimate = sep_MvKO_estimate, foldchange_MvKO = foldchange_MvKO, ctrl_sex_pval = ctrl_sex_pval, ctrl_sex_estimate = ctrl_sex_estimate, KO_sex_pval = KO_sex_pval, KO_sex_estimate = KO_sex_estimate, fdr_stage1 = fdr_Stage1, fdr_stage2 = fdr_Stage2, fdr_stage3 = fdr_Stage3, sep_FvKO_fdr = p.adjust(sep_FvKO_pval,'fdr'), sep_MvKO_fdr = p.adjust(sep_MvKO_pval, 'fdr'), fdr_ctrl_sex = fdr_ctrl_sex, fdr_KO_sex = fdr_KO_sex), "5 TwoStage METAbol_KO SEX_Npc2 plasma.csv")
 
 
 # ================================================================================================================
